@@ -10,11 +10,10 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
 
-    # Register Models
-    from app import models
+    from . import models
 
     @app.route('/')
     def home():
-        return "ATS Backend Running!"
+        return "ATS Backend is Running!"
 
     return app
