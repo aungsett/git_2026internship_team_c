@@ -1,5 +1,5 @@
-# Environment file
+venv/
+__pycache__/
+*.pyc
 .env
-
-# Firebase service account key
-config/firebase.json
+migrations/__pycache__/
