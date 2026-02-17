@@ -12,6 +12,9 @@ def create_app():
 
     from . import models
 
+    from app.api.applicant import applicant_bp
+    app.register_blueprint(applicant_bp)
+
     @app.route('/')
     def home():
         return "ATS Backend is Running!"

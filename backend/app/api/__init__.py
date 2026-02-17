@@ -1,3 +1,1 @@
-from app.api.applicant import applicant_bp
-
-
+# This can be left blank for now, or just expose blueprints if needed.
