@@ -14,7 +14,7 @@ def create_app():
     from . import models
 
     # Register Blueprints
-    app.register_blueprint(admin_bp, url_prefix="/admin") # Added this line
+    app.register_blueprint(admin_bp, url_prefix="/admin") 
 
     @app.route('/')
     def home():

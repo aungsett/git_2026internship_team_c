@@ -3,3 +3,4 @@ __pycache__/
 *.pyc
 .env
 migrations/__pycache__/
+firebase-service-account.json
