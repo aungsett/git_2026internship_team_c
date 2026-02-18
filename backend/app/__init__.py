@@ -18,6 +18,10 @@ def create_app():
     from app.api.admin import admin_bp
     app.register_blueprint(admin_bp)
 
+    from app.api.auth import auth_bp
+    app.register_blueprint(auth_bp)
+
+
     @app.route('/')
     def home():
         return "ATS Backend is Running!"
