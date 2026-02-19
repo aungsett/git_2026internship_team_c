@@ -3,11 +3,12 @@ from app.extensions import db
 from app.models.applicant import Applicant
 from app.models.review import ApplicationReview
 from app.models.document import Document
+from app.utils.decorators import admin_required
 import csv
 import io
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
-
+@admin_required
 @admin_bp.route("/applications", methods=["GET"])
 def get_all_applications():
     try:

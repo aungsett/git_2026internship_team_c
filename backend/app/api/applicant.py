@@ -2,11 +2,13 @@ from flask import Blueprint, request, jsonify
 from app.extensions import db
 from app.models.applicant import Applicant
 from app.models.document import Document
+from app.utils.decorators import applicant_required
 from datetime import datetime
 
 applicant_bp = Blueprint("applicant", __name__, url_prefix="/applicant")
 
 @applicant_bp.route("/submit", methods=["POST"])
+@applicant_required
 def submit_application():
     try:
         data = request.form
@@ -59,6 +61,7 @@ def submit_application():
         return jsonify({"success": False, "error": str(e)}), 500
 
 @applicant_bp.route("/parse-cv", methods=["POST"])
+@applicant_required
 def parse_cv():
 
     file = request.files.get("file")

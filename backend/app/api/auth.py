@@ -36,9 +36,7 @@ def extract_user_info(decoded_token):
     return email, name
 
 
-# ---------------------------------------------------
 # Admin Login
-# ---------------------------------------------------
 @auth_bp.route("/admin/login", methods=["POST"])
 def admin_login():
     try:
