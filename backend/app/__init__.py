@@ -1,6 +1,7 @@
 from flask import Flask
 from config import Config
 from .extensions import db, migrate
+from .routes.admin_routes import admin_bp
 
 def create_app():
     app = Flask(__name__)
@@ -21,6 +22,8 @@ def create_app():
     from app.api.auth import auth_bp
     app.register_blueprint(auth_bp)
 
+    # Register Blueprints
+    app.register_blueprint(admin_bp, url_prefix="/admin") 
 
     @app.route('/')
     def home():
