@@ -1,12 +1,14 @@
 from functools import wraps
 from flask import request, jsonify
 from firebase_admin import auth
+from app.models.admin import Admin  # adjust if path differs
 
 
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         auth_header = request.headers.get("Authorization")
+
         if not auth_header:
             return jsonify({"error": "Authorization header missing"}), 401
 
@@ -18,10 +20,25 @@ def admin_required(f):
 
             decoded_token = auth.verify_id_token(token)
 
-            if decoded_token.get("role") != "admin":
-                return jsonify({"error": "Forbidden - Admin access required"}), 403
+            uid = decoded_token.get("uid")
 
-            request.user = decoded_token
+            if not uid:
+                return jsonify({"error": "Invalid token payload"}), 401
+
+            admin = Admin.query.filter_by(firebase_uid=uid).first()
+
+            if not admin:
+                return jsonify({"error": "Forbidden - Not an admin"}), 403
+
+            if admin.role != "admin":
+                return jsonify({"error": "Forbidden - Admin role required"}), 403
+
+            request.user = {
+                "uid": uid,
+                "email": admin.email,
+                "role": admin.role,
+                "admin_id": admin.admin_id
+            }
 
         except auth.ExpiredIdTokenError:
             return jsonify({"error": "Token expired"}), 401
