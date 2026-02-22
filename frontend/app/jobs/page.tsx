@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function Home() {
+export default function Page() {
 	return (
 		<main className="min-h-screen px-10 py-10">
 			<div className="bg-white rounded-lg shadow p-6 w-fit">

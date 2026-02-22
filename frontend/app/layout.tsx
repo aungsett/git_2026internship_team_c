@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Header } from "@/components/landing/header";
+import { BreadcrumbBar } from "@/components/landing/breadcrumbbar";
+import { Footer } from "@/components/landing/footer";
 
 export const metadata: Metadata = {
 	title: "ATS by Team C",
@@ -13,7 +16,12 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={`antialiased`}>{children}</body>
+			<body className={`antialiased bg-slate-50 pt-[72.8px]`}>
+				<Header />
+				<BreadcrumbBar />
+				{children}
+				<Footer />
+			</body>
 		</html>
 	);
 }
