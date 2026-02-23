@@ -1,5 +1,19 @@
+# Virtual Environment
 venv/
+
+# Environment Variables
+.env
+
+# Python Cache
 __pycache__/
 *.pyc
-.env
+
+# Pytest Cache
+.pytest_cache/
+
+# Migrations Cache
 migrations/__pycache__/
+
+# Firebase / Secrets
+firebase-service-account.json
+config/
