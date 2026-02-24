@@ -8,8 +8,8 @@ import csv
 import io
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
-@admin_required
 @admin_bp.route("/applications", methods=["GET"])
+@admin_required
 def get_all_applications():
     try:
         # Basic Pagination

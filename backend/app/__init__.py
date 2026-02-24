@@ -22,6 +22,9 @@ def create_app():
     from app.api.auth import auth_bp
     app.register_blueprint(auth_bp)
 
+    from app.api.job import job_bp
+    app.register_blueprint(job_bp)
+
     # Register Blueprints
     #app.register_blueprint(admin_bp, url_prefix="/admin") 
 
