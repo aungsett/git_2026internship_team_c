@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { CVUploadSection } from "@/components/applicant/cv-upload-section";
-import { ApplicantForm } from "@/components/applicant/applicant-form";
+import { CVUploadSection } from "@/features/applicant/components/cv-upload-section";
+import { ApplicantForm } from "@/features/applicant/components/applicant-form";
 
 export default function Page() {
 	const [formData, setFormData] = useState({
