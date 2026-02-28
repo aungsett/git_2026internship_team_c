@@ -1,11 +1,14 @@
 from flask import Flask
+from flask_cors import CORS
 from config import Config
 from .extensions import db, migrate
-#from .routes.admin_routes import admin_bp
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+
+    # Allow frontend (localhost:3000) to call the backend
+    CORS(app, origins=["http://localhost:3000"])
 
     # Initialize Extensions
     db.init_app(app)

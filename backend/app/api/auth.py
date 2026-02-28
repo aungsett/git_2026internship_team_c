@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+﻿from flask import Blueprint, request, jsonify
 from app.extensions import db
 from firebase_admin import auth as firebase_auth
 from app.models.admin import Admin
@@ -48,7 +48,11 @@ def admin_login():
         admin = Admin.query.filter_by(email=email).first()
 
         if not admin:
-            admin = Admin(email=email, name=name)
+            admin = Admin(
+                firebase_uid=decoded.get("uid"),
+                username=name if name else email.split("@")[0],
+                email=email
+            )
             db.session.add(admin)
             db.session.commit()
 

@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from app.auth.auth_middleware import admin_required
+from app.utils.decorators import admin_required
 admin_bp = Blueprint("admin", __name__)
 
 @admin_bp.route("/test")

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const Header = () => {
 	return (
 		<header className="fixed top-0 left-0 w-full bg-white border-b border-slate-200 flex items-center justify-between mb-4 px-4 py-2">
@@ -19,9 +21,12 @@ export const Header = () => {
 				<button className="font-semibold px-5 py-2 rounded-lg hover:bg-blue-600 hover:text-white transition-all">
 					Help
 				</button>
-				<button className="font-semibold px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-800 transition-all">
+				<Link
+					href="/login"
+					className="font-semibold px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-800 transition-all"
+				>
 					Log In
-				</button>
+				</Link>
 			</div>
 		</header>
 	);
