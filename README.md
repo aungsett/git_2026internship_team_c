@@ -1,5 +1,4 @@
 # Team C
-# Team C
 
 ## Project Overview
 This repository contains a full-stack application with a Python (Flask) backend and a Next.js frontend. The backend manages authentication, job postings, and applicant data, while the frontend provides a user interface for job seekers and administrators.
