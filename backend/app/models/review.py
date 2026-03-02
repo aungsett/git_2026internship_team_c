@@ -7,7 +7,7 @@ class ApplicationReview(db.Model):
     review_id = db.Column(db.Integer, primary_key=True)
     
     # Foreign Keys
-    applicant_id = db.Column(db.Integer, db.ForeignKey('applicants.applicant_id'), nullable=False)
+    applicant_id = db.Column(db.Integer, db.ForeignKey('applicants.applicant_id'), nullable=False,unique=True)
     admin_id = db.Column(db.Integer, db.ForeignKey('admins.admin_id'), nullable=False)
     
     status = db.Column(db.String(30), default="Pending") # Pending/Shortlisted/Rejected
