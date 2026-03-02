@@ -59,7 +59,7 @@ class ApplicantService:
             if age < 18:
                 raise ValueError("Applicant must be at least 18 years old")
 
-               # -------------------------
+        # -------------------------
         # 6️⃣ Create Applicant FIRST
         # -------------------------
         applicant = Applicant(
@@ -68,7 +68,17 @@ class ApplicantService:
             email=email,
             date_of_birth=dob_obj,
             qualification=data.get("qualification"),
-            preferred_japanese_course=data.get("preferred_course")
+            address=data.get("address"),
+            phone_number=data.get("phone_number"),
+            college=data.get("college"),
+            work_experience=data.get("work_experience"),
+            preferred_japanese_course=data.get("preferred_japanese_course"),
+            skills=data.get("skills", []),
+            language=data.get("language", []),
+            social_links=data.get("social_links", []),
+            professional_summary=data.get("professional_summary"),
+            comments=data.get("comments"),
+            created_at=datetime.utcnow()
         )
 
         db.session.add(applicant)
@@ -95,3 +105,25 @@ class ApplicantService:
         db.session.commit()
 
         return applicant
+    
+    #For applicant to view their application
+    @staticmethod
+    def get_applicant_by_id(applicant_id):
+        applicant = Applicant.query.get(applicant_id)
+        
+        if not applicant:
+            raise ValueError("Applicant not found")
+        
+        return applicant
+    
+    @staticmethod
+    def delete_applicant(applicant_id):
+        applicant = Applicant.query.get(applicant_id)
+        
+        if not applicant:
+            raise ValueError("Applicant not found")
+        
+        db.session.delete(applicant)
+        db.session.commit()
+
+        return True

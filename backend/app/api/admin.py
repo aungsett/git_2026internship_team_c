@@ -1,143 +1,83 @@
 from flask import Blueprint, request, jsonify, Response
-from app.extensions import db
-from app.models.applicant import Applicant
-from app.models.review import ApplicationReview
-from app.models.document import Document
+from app.services.admin_service import AdminService
 from app.utils.decorators import admin_required
-import csv
-import io
+
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
+
 @admin_bp.route("/applications", methods=["GET"])
 @admin_required
 def get_all_applications():
     try:
-        # Basic Pagination
+        
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 10, type=int)
-        
-        # Query Applicants
-        pagination = Applicant.query.order_by(Applicant.created_at.desc()).paginate(page=page, per_page=per_page, error_out=False)
-        applicants = pagination.items
 
-        output = []
-        for app in applicants:
-            # Check if review exists
-            status = "Pending"
-            if app.reviews:
-                # Assuming 1 review per admin logic, or taking the latest
-                status = app.reviews[0].status 
-
-            output.append({
-                "id": app.applicant_id,
-                "full_name": f"{app.first_name} {app.last_name}",
-                "email": app.email,
-                "qualification": app.qualification,
-                "work_experience": app.work_experience,
-                "status": status,
-                "created_at": app.created_at.isoformat()
-            })
+        result = AdminService.get_all_applications(page, per_page)
 
         return jsonify({
             "success": True,
-            "data": output,
-            "total": pagination.total,
-            "pages": pagination.pages
+            **result
         }), 200
+
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
-
+    
 
 @admin_bp.route("/applications/<int:id>", methods=["GET"])
+@admin_required
 def get_single_application(id):
     try:
-        app = Applicant.query.get_or_404(id)
-        
-        # Get Document URL
-        doc_url = app.document.document_url if app.document else None
-        
-        # Get Review Data
-        review_data = {}
-        if app.reviews:
-            latest_review = app.reviews[0]
-            review_data = {
-                "status": latest_review.status,
-                "comments": latest_review.comments,
-                "reviewed_at": latest_review.reviewed_at.isoformat()
-            }
-
-        data = app.to_dict() # Uses the helper we made in models
-        data["document_url"] = doc_url
-        data["review"] = review_data
+        data = AdminService.get_single_application(id)
 
         return jsonify({"success": True, "data": data}), 200
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
 
+    except ValueError as e:
+        return jsonify({"success": False, "error": str(e)}), 404
+    
 
 @admin_bp.route("/applications/<int:id>/review", methods=["PUT"])
+@admin_required
 def review_application(id):
     try:
         data = request.json
-        status = data.get("status")
-        comments = data.get("comments")
-        admin_id = data.get("admin_id")
 
-        if not status or not admin_id:
-            return jsonify({"error": "Status and Admin ID required"}), 400
+        AdminService.review_application(
+            applicant_id=id,
+            status=data.get("status"),
+            comments=data.get("comments"),
+            admin_id=data.get("admin_id")
+        )
 
-        # Check if review exists
-        review = ApplicationReview.query.filter_by(applicant_id=id).first()
+        return jsonify({
+            "success": True,
+            "message": "Status updated"
+        }), 200
 
-        if review:
-            review.status = status
-            review.comments = comments
-        else:
-            # Create new review
-            review = ApplicationReview(
-                applicant_id=id,
-                admin_id=admin_id,
-                status=status,
-                comments=comments
-            )
-            db.session.add(review)
+    except ValueError as e:
+        return jsonify({"success": False, "error": str(e)}), 400
 
-        db.session.commit()
-        return jsonify({"success": True, "message": "Status updated"}), 200
+
     except Exception as e:
-        db.session.rollback()
+        
         return jsonify({"success": False, "error": str(e)}), 500
-
+    
 
 @admin_bp.route("/export", methods=["GET"])
+@admin_required
 def export_csv():
     try:
-        # Get all applicants
-        applicants = Applicant.query.all()
+        csv_data = AdminService.export_applicants_csv()
 
-        # Create CSV in memory
-        output = io.StringIO()
-        writer = csv.writer(output)
-        
-        # Headers
-        writer.writerow(["ID", "Name", "Email", "Phone", "Qualification", "Experience", "Summary"])
-
-        for app in applicants:
-            writer.writerow([
-                app.applicant_id,
-                f"{app.first_name} {app.last_name}",
-                app.email,
-                app.phone_number,
-                app.qualification,
-                app.work_experience,
-                app.professional_summary
-            ])
-
-        # Return as downloadable file
         return Response(
-            output.getvalue(),
+            csv_data,
             mimetype="text/csv",
-            headers={"Content-Disposition": "attachment;filename=applicants_export.csv"}
+            headers={
+                "Content-Disposition":
+                "attachment;filename=applicants_export.csv"
+            }
         )
+
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+

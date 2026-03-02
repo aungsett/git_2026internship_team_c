@@ -27,3 +27,57 @@ def submit_application():
     except Exception as e:
         db.session.rollback()
         return jsonify({"success": False, "error": str(e)}), 500
+    
+@applicant_bp.route("/<int:applicant_id>", methods=["GET"])
+def get_applicant(applicant_id):
+    try:
+        applicant = ApplicantService.get_applicant_by_id(applicant_id)
+
+        return jsonify({
+            "success": True,
+            "data": {
+                "id": applicant.applicant_id,
+                "first_name": applicant.first_name,
+                "last_name": applicant.last_name,
+                "email": applicant.email
+            }
+        })
+
+    except ValueError as e:
+        return jsonify({"success": False, "error": str(e)}), 404
+
+@applicant_bp.route("/<int:applicant_id>", methods=["DELETE"])
+def delete_applicant(applicant_id):
+    try:
+        ApplicantService.delete_applicant(applicant_id)
+
+        return jsonify({
+            "success": True,
+            "message": "Applicant deleted successfully"
+        })
+
+    except ValueError as e:
+        return jsonify({"success": False, "error": str(e)}), 404
+    
+@applicant_bp.route("/parse-cv", methods=["POST"])
+@applicant_required
+def parse_cv():
+
+    file = request.files.get("file")
+
+    if not file:
+        return jsonify({"error": "No file uploaded"}), 400
+
+    # Temporary fake AI response (replace later with Gemini)
+    parsed_data = {
+        "first_name": "John",
+        "last_name": "Doe",
+        "skills": ["Python", "Machine Learning"],
+        "professional_summary": "AI parsed CV summary",
+        "work_experience": 2
+    }
+
+    return jsonify({
+        "success": True,
+        "data": parsed_data
+    }), 200
