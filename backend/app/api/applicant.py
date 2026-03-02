@@ -3,6 +3,13 @@ from app.extensions import db
 from app.models.applicant import Applicant
 from app.models.document import Document
 from app.utils.decorators import applicant_required
+from app.services.applicant_service import (
+    create_applicant,
+    get_applicant_by_id,
+    get_all_applicants,
+    update_applicant,
+    delete_applicant
+)
 from datetime import datetime
 
 applicant_bp = Blueprint("applicant", __name__, url_prefix="/applicant")
@@ -82,3 +89,34 @@ def parse_cv():
         "success": True,
         "data": parsed_data
     }), 200
+
+@applicant_bp.route("/", methods=["POST"])
+def create():
+    data = request.json
+    applicant = create_applicant(data)
+    return jsonify(applicant.to_dict()), 201
+
+
+@applicant_bp.route("/<int:applicant_id>", methods=["GET"])
+def get_one(applicant_id):
+    applicant = get_applicant_by_id(applicant_id)
+    return jsonify(applicant.to_dict())
+
+
+@applicant_bp.route("/", methods=["GET"])
+def get_all():
+    applicants = get_all_applicants()
+    return jsonify([a.to_dict() for a in applicants])
+
+
+@applicant_bp.route("/<int:applicant_id>", methods=["PUT"])
+def update(applicant_id):
+    data = request.json
+    applicant = update_applicant(applicant_id, data)
+    return jsonify(applicant.to_dict())
+
+
+@applicant_bp.route("/<int:applicant_id>", methods=["DELETE"])
+def delete(applicant_id):
+    delete_applicant(applicant_id)
+    return jsonify({"message": "Deleted successfully"})
