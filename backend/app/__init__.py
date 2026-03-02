@@ -2,6 +2,10 @@ from flask import Flask
 from flask_cors import CORS
 from config import Config
 from .extensions import db, migrate
+from app.api.applicant import applicant_bp
+from app.api.admin import admin_bp
+from app.api.auth import auth_bp
+from app.api.job import job_bp
 
 def create_app():
     app = Flask(__name__)
@@ -19,20 +23,12 @@ def create_app():
     with app.app_context():
         db.create_all()
         
-    from app.api.applicant import applicant_bp
-    app.register_blueprint(applicant_bp)
 
-    from app.api.admin import admin_bp
-    app.register_blueprint(admin_bp)
-
-    from app.api.auth import auth_bp
-    app.register_blueprint(auth_bp)
-
-    from app.api.job import job_bp
-    app.register_blueprint(job_bp)
-
-    # Register Blueprints
-    #app.register_blueprint(admin_bp, url_prefix="/admin") 
+    # Register Blueprints with URL prefixes
+    app.register_blueprint(admin_bp, url_prefix="/admin")
+    app.register_blueprint(applicant_bp, url_prefix="/applicant")
+    app.register_blueprint(auth_bp, url_prefix="/auth")
+    app.register_blueprint(job_bp, url_prefix="/jobs")
 
     @app.route('/')
     def home():

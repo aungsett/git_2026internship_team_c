@@ -35,7 +35,6 @@ class Applicant(db.Model):
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-
     # 1 Applicant <-> 1 Document
     document = db.relationship("Document", backref="applicant", uselist=False, lazy=True)
 
