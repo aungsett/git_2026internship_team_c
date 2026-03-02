@@ -32,7 +32,7 @@ class AuthService:
         admin = Admin.query.filter_by(email=email).first()
 
         if not admin:
-            admin = Admin(email=email, name=name)
+            admin = Admin(firebase_uid=decoded.get("uid"), username=name if name else email.split("@")[0], email=email)
             db.session.add(admin)
             db.session.commit()
 
