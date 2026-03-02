@@ -15,7 +15,10 @@ def create_app():
     migrate.init_app(app, db)
 
     from . import models
-
+    # AUTO-FIX: Create tables if missing on every server start
+    with app.app_context():
+        db.create_all()
+        
     from app.api.applicant import applicant_bp
     app.register_blueprint(applicant_bp)
 
