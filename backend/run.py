@@ -1,5 +1,5 @@
 from app import create_app
-from app.auth.firebase_config import initialize_firebase
+from app.firebase_config import initialize_firebase
 
 initialize_firebase()
 app = create_app()
