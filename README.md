@@ -28,8 +28,6 @@ python -m venv venv
 ```sh
 pip install -r requirements.txt
 # If you see missing package errors, install them manually:
-pip install firebase-admin cloudinary
-pip install flask-cors
 ```
 
 ### 4. Start Backend Server
