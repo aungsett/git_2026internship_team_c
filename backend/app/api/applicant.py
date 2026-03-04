@@ -3,7 +3,7 @@ from app.utils.decorators import applicant_required
 from app.services.applicant_service import ApplicantService
 from app.extensions import db
 
-applicant_bp = Blueprint("applicant", __name__, url_prefix="/applicant")
+applicant_bp = Blueprint("applicant", __name__)
 
 
 @applicant_bp.route("/submit", methods=["POST"])
