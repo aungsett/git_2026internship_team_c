@@ -73,9 +73,9 @@ class ApplicantService:
             college=data.get("college"),
             work_experience=data.get("work_experience"),
             preferred_japanese_course=data.get("preferred_japanese_course"),
-            skills=data.get("skills", []),
-            language=data.get("language", []),
-            social_links=data.get("social_links", []),
+            skills=data.getlist("skills"),
+            language=data.getlist("language"),
+            social_links=data.getlist("social_links"),
             professional_summary=data.get("professional_summary"),
             comments=data.get("comments"),
             created_at=datetime.utcnow()
