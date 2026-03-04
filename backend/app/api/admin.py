@@ -3,7 +3,7 @@ from app.services.admin_service import AdminService
 from app.utils.decorators import admin_required
 
 
-admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
+admin_bp = Blueprint("admin", __name__)
 
 @admin_bp.route("/applications", methods=["GET"])
 @admin_required
