@@ -26,23 +26,29 @@ interface FilterBarProps {
 	applications: Application[];
 }
 
-// Get unique values for dropdowns
 const getUniqueQualifications = (apps: Application[]) => {
-	return Array.from(new Set(apps.map((app) => app.qualification))).sort();
+	return Array.from(
+		new Set(apps.map((app) => app.qualification).filter(Boolean))
+	).sort() as string[];
 };
 
 const getUniqueExperiences = (apps: Application[]) => {
-	return Array.from(new Set(apps.map((app) => app.experience))).sort(
-		(a, b) => {
-			const numA = parseInt(a);
-			const numB = parseInt(b);
-			return numA - numB;
-		},
-	);
+	return Array.from(
+		new Set(
+			apps
+				.map((app) => app.work_experience)
+				.filter((e) => e != null)
+				.map(String)
+		)
+	).sort((a, b) => parseInt(a) - parseInt(b));
 };
 
 const getUniqueCourses = (apps: Application[]) => {
-	return Array.from(new Set(apps.map((app) => app.course))).sort();
+	return Array.from(
+		new Set(
+			apps.map((app) => app.preferred_japanese_course).filter(Boolean)
+		)
+	).sort() as string[];
 };
 
 export const FilterBar = ({
@@ -119,7 +125,7 @@ export const FilterBar = ({
 							<SelectItem value="any">Any Experience</SelectItem>
 							{getUniqueExperiences(applications).map((exp) => (
 								<SelectItem key={exp} value={exp}>
-									{exp}
+									{exp} Year{exp !== "1" ? "s" : ""}
 								</SelectItem>
 							))}
 						</SelectContent>
