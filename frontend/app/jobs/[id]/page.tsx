@@ -2,9 +2,11 @@
 import { useState } from "react";
 import { CVUploadSection } from "@/features/applicant/components/cv-upload-section";
 import { ApplicantForm } from "@/features/applicant/components/applicant-form";
+import { Loader } from "@/features/applicant/components/loader";
 import { api } from "@/lib/api";
 
 export default function Page() {
+	const [parseAI, setParseAI] = useState(false);
 	const [formData, setFormData] = useState({
 		firstName: "",
 		lastName: "",
@@ -117,6 +119,7 @@ export default function Page() {
 
 	return (
 		<div className="flex flex-col min-h-screen bg-slate-50">
+			{parseAI && <Loader setParseAI={setParseAI} />}
 			<div className="flex-1 w-full px-4 py-8 md:py-12">
 				<div className="max-w-4xl mx-auto">
 					<div className="mb-8">
