@@ -1,59 +1,52 @@
-# Team C
+# ATS Portal - Team C
 
-## Project Overview
-This repository contains a full-stack application with a Python (Flask) backend and a Next.js frontend. The backend manages authentication, job postings, and applicant data, while the frontend provides a user interface for job seekers and administrators.
+An Applicant Tracking System for managing job listings, applications, and candidate reviews. Applicants can browse open positions, submit applications with CV uploads, and receive confirmation emails. Admins can review, shortlist, and manage applications from a dedicated dashboard.
 
----
+## Tech Stack
+
+- **Backend:** Python, Flask, PostgreSQL (Neon), Firebase Auth, Cloudinary
+- **Frontend:** Next.js, TypeScript, Tailwind CSS, shadcn/ui
 
 ## Getting Started
 
-### 1. Clone the Repository
-```sh
-git clone <repo-url>
-cd <repo-folder>
+### Prerequisites
+- Python 3.12+
+- Node.js 18+
+- A `.env` file in `/backend` with the following variables:
+```
+DATABASE_URL=
+FIREBASE_CREDENTIALS=
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+MAIL_USERNAME=
+MAIL_PASSWORD=
 ```
 
----
-
 ## Backend Setup
-
-### 2. Create and Activate Virtual Environment (Windows)
 ```sh
 cd backend
 python -m venv venv
-.\venv\Scripts\activate
-```
-
-### 3. Install Dependencies
-```sh
+venv\Scripts\activate
 pip install -r requirements.txt
-# If you see missing package errors, install them manually:
-```
-
-### 4. Start Backend Server
-```sh
+flask db upgrade
+python seed.py
 python run.py
 ```
 
----
+Backend runs on `http://localhost:5000`
 
 ## Frontend Setup
-
-### 5. Install Dependencies
 ```sh
 cd frontend
 npm install
-```
-
-### 6. Start Frontend Server
-```sh
 npm run dev
 ```
 
----
+Frontend runs on `http://localhost:3000`
 
-## Accessing the Application
-- Backend: http://localhost:5000 (or as configured in run.py)
-- Frontend: http://localhost:3000
-
----
+## Project Structure
+```
+/backend     → Flask API, models, services, migrations
+/frontend    → Next.js app, components, features
+```
