@@ -80,6 +80,18 @@ class ApplicantService:
         db.session.add(document)
         db.session.commit()
 
+        # Import here to avoid circular import
+        from app.services.email_service import EmailService
+
+        # Send application confirmation email
+        try:
+            EmailService.send_application_received_email(
+                applicant.email,
+                applicant.first_name
+            )
+        except Exception as e:
+            print("Email sending failed:", e)
+
         return applicant
 
     # For applicant to view their application
