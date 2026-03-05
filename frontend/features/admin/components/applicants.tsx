@@ -1,5 +1,4 @@
 "use client";
-
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,10 +6,12 @@ import { FilterBar } from "./filterbar";
 import { ApplicantsSheet } from "./applicants-sheet";
 import { Pagination } from "./pagination";
 import { useAdmin } from "@/features/hooks/useAdmin";
-import { mockApplications } from "@/lib/data";
 
 export default function ApplicationsPage() {
 	const {
+		applications,
+		loading,
+		error,
 		search,
 		setSearch,
 		qualification,
@@ -29,7 +30,24 @@ export default function ApplicationsPage() {
 		handleReset,
 		handleExportCSV,
 		itemsPerPage,
-	} = useAdmin({ applications: mockApplications });
+	} = useAdmin();
+
+	if (loading) {
+		return (
+			<main className="min-h-screen bg-gray-50 flex items-center justify-center">
+				<p className="text-gray-500">Loading applications...</p>
+			</main>
+		);
+	}
+
+	if (error) {
+		return (
+			<main className="min-h-screen bg-gray-50 flex items-center justify-center">
+				<p className="text-red-500">{error}</p>
+			</main>
+		);
+	}
+
 	return (
 		<main className="min-h-screen bg-gray-50">
 			<div className="">
@@ -65,7 +83,7 @@ export default function ApplicationsPage() {
 					sort={sort}
 					setSort={setSort}
 					handleReset={handleReset}
-					applications={mockApplications}
+					applications={applications}
 				/>
 
 				{/* Results Badge */}
@@ -75,7 +93,7 @@ export default function ApplicationsPage() {
 						{filteredApplications.length}
 					</Badge>
 					<span className="text-sm text-gray-600">
-						of {mockApplications.length} applications
+						of {applications.length} applications
 					</span>
 				</div>
 

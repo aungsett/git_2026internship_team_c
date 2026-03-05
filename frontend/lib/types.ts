@@ -1,15 +1,14 @@
 export interface Application {
-	id: string;
-	name: string;
+	applicant_id: number;
+	full_name: string;
 	email: string;
-	phone: string;
-	qualification: string;
-	experience: string;
-	course: string;
-	status: "Shortlisted" | "Pending Review" | "Interviewed" | "Rejected";
-	appliedDate: Date;
+	phone_number?: string | null;
+	qualification?: string | null;
+	work_experience?: number | null;
+	preferred_japanese_course?: string | null;
+	status: string;
+	created_at: string;
 }
 
 export type SortOrder = "newest" | "oldest";
-
-export type StatusType = "Pending" | "Shortlisted" | "Rejected" | "Interviewed";
+export type StatusType = "Pending" | "Shortlisted" | "Rejected";
