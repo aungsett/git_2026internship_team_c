@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 from config import Config
-from .extensions import db, migrate
+from .extensions import db, migrate, mail  # Added mail here
 from app.api.applicant import applicant_bp
 from app.api.admin import admin_bp
 from app.api.auth import auth_bp
@@ -11,18 +11,25 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
+    # Email Configuration (ensure these are in your Config class or .env)
+    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+    app.config['MAIL_PORT'] = 587
+    app.config['MAIL_USE_TLS'] = True
+    app.config['MAIL_USERNAME'] = Config.MAIL_USERNAME
+    app.config['MAIL_PASSWORD'] = Config.MAIL_PASSWORD
+
     # Allow frontend (localhost:3000) to call the backend
     CORS(app, origins=["http://localhost:3000"])
 
     # Initialize Extensions
     db.init_app(app)
     migrate.init_app(app, db)
+    mail.init_app(app)  # Initialize mail with the app
 
     from . import models
     # AUTO-FIX: Create tables if missing on every server start
     with app.app_context():
         db.create_all()
-        
 
     # Register Blueprints with URL prefixes
     app.register_blueprint(admin_bp, url_prefix="/admin")
