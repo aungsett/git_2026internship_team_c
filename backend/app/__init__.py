@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 from config import Config
-from .extensions import db, migrate
+from .extensions import db, migrate, mail  # Added mail here
 from app.api.applicant import applicant_bp
 from app.api.admin import admin_bp
 from app.api.auth import auth_bp
@@ -17,12 +17,12 @@ def create_app():
     # Initialize Extensions
     db.init_app(app)
     migrate.init_app(app, db)
+    mail.init_app(app)  # Initialize mail with the app
 
     from . import models
     # AUTO-FIX: Create tables if missing on every server start
     with app.app_context():
         db.create_all()
-        
 
     # Register Blueprints with URL prefixes
     app.register_blueprint(admin_bp, url_prefix="/admin")
