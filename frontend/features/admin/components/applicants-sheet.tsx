@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Application } from "@/lib/types";
 import { useRouter } from "next/navigation";
-// Status badge styling
+
 const getStatusStyle = (status: string) => {
 	switch (status) {
 		case "Shortlisted":
@@ -17,6 +17,7 @@ const getStatusStyle = (status: string) => {
 			return "bg-gray-100 text-gray-800";
 	}
 };
+
 export const ApplicantsSheet = ({
 	filteredApplications,
 	startIdx,
@@ -28,6 +29,7 @@ export const ApplicantsSheet = ({
 }) => {
 	const paginatedApplications = filteredApplications.slice(startIdx, endIdx);
 	const router = useRouter();
+
 	return (
 		<div className="overflow-x-auto rounded-lg bg-white shadow-sm">
 			<table className="w-full">
@@ -59,12 +61,12 @@ export const ApplicantsSheet = ({
 				<tbody>
 					{paginatedApplications.map((app) => (
 						<tr
-							key={app.id}
+							key={app.applicant_id}
 							className="border-b border-gray-200 hover:bg-gray-50"
 						>
 							<td className="px-6 py-4">
 								<p className="font-semibold text-gray-900">
-									{app.name}
+									{app.full_name}
 								</p>
 							</td>
 							<td className="px-6 py-4">
@@ -72,17 +74,19 @@ export const ApplicantsSheet = ({
 									{app.email}
 								</p>
 								<p className="text-sm text-gray-500">
-									{app.phone}
+									{app.phone_number ?? "—"}
 								</p>
 							</td>
 							<td className="px-6 py-4">
 								<p className="text-sm text-gray-900">
-									{app.qualification}
+									{app.qualification ?? "—"}
 								</p>
 							</td>
 							<td className="px-6 py-4">
 								<p className="text-sm text-gray-600">
-									{app.experience}
+									{app.work_experience != null
+										? `${app.work_experience} Year${app.work_experience !== 1 ? "s" : ""}`
+										: "—"}
 								</p>
 							</td>
 							<td className="px-6 py-4">
@@ -94,7 +98,7 @@ export const ApplicantsSheet = ({
 							</td>
 							<td className="px-6 py-4">
 								<p className="text-sm text-gray-600">
-									{app.appliedDate.toLocaleDateString(
+									{new Date(app.created_at).toLocaleDateString(
 										"en-US",
 										{
 											year: "numeric",
@@ -110,7 +114,7 @@ export const ApplicantsSheet = ({
 									className="text-blue-600"
 									onClick={() => {
 										router.push(
-											`/dashboard/applicant-id=${app.id}`,
+											`/dashboard/applicant-id=${app.applicant_id}`,
 										);
 									}}
 								>
