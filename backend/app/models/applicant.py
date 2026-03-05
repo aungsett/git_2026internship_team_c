@@ -39,7 +39,7 @@ class Applicant(db.Model):
     document = db.relationship("Document", backref="applicant", uselist=False, lazy=True)
 
     # 1 Applicant <-> Many Reviews
-    reviews = db.relationship("ApplicationReview", backref="applicant", lazy=True)
+    reviews = db.relationship("ApplicationReview", backref="applicant", lazy=True, order_by="ApplicationReview.reviewed_at.desc()")
 
     def __repr__(self):
         return f"<Applicant {self.email}>"

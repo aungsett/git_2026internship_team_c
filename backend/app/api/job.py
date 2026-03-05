@@ -3,7 +3,7 @@ from app.services.job_service import JobService
 from app.utils.decorators import admin_required
 
 
-job_bp = Blueprint("job", __name__, url_prefix="/jobs")
+job_bp = Blueprint("job", __name__)
 
 
 @job_bp.route("/", methods=["GET"])

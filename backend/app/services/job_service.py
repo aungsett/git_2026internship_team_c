@@ -24,7 +24,7 @@ class JobService:
                 "department": job.department,
                 "salary_range": job.salary_range,
                 "experience_required": job.experience_required,
-                "skills_required": job.skills_required,
+                "skills": job.skills,
                 "application_deadline": job.application_deadline.isoformat() if job.application_deadline else None,
                 "status": job.status,
                 "created_at": job.created_at.isoformat()
@@ -53,7 +53,7 @@ class JobService:
             "department": job.department,
             "salary_range": job.salary_range,
             "experience_required": job.experience_required,
-            "skills_required": job.skills_required,
+            "skills": job.skills,
             "application_deadline": job.application_deadline.isoformat() if job.application_deadline else None,
             "status": job.status,
             "created_at": job.created_at.isoformat(),
@@ -82,7 +82,7 @@ class JobService:
             department=data.get("department"),
             salary_range=data.get("salary_range"),
             experience_required=data.get("experience_required"),
-            skills_required=data.get("skills_required", []),
+            skills=data.get("skills", []),
             application_deadline=deadline,
             status=data.get("status", "Open"),
             created_at=datetime.utcnow()
@@ -92,4 +92,3 @@ class JobService:
         db.session.commit()
 
         return True
-    
