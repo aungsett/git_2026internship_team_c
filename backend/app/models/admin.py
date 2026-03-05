@@ -8,7 +8,7 @@ class Admin(db.Model):
     firebase_uid = db.Column(db.String(128), unique=True, nullable=False)
     username = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
-    role = db.Column(db.String(20), default='recruiter') 
+    role = db.Column(db.String(20), default='admin') 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relationship: 1 Admin can review many Applicants

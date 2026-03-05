@@ -1,5 +1,10 @@
 flask
 flask-sqlalchemy
 flask-migrate
+flask-cors
+flask-mail
 psycopg2-binary
 python-dotenv
+firebase-admin
+cloudinary
+google-generativeai

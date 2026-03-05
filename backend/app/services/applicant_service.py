@@ -1,19 +1,15 @@
 from datetime import datetime
-import re
 from app.extensions import db
 from app.models.applicant import Applicant
 from app.models.document import Document
-from app.utils.cloudinary import upload_cv   # ✅ Import here
+from app.utils.cloudinary import upload_cv
+from app.utils.validators import validate_email, validate_file_type, validate_file_size
 
 
 class ApplicantService:
 
     @staticmethod
     def submit_application(data, file):
-
-        # -------------------------
-        # 1️⃣ Required Field Validation
-        # -------------------------
         required_fields = ["first_name", "last_name", "email"]
         for field in required_fields:
             if not data.get(field):
@@ -22,30 +18,20 @@ class ApplicantService:
         if not file:
             raise ValueError("CV file is required")
 
-        # -------------------------
-        # 2️⃣ Email Format Validation
-        # -------------------------
         email = data.get("email").strip().lower()
 
-        email_regex = r"^[\w\.-]+@[\w\.-]+\.\w+$"
-        if not re.match(email_regex, email):
+        if not validate_email(email):
             raise ValueError("Invalid email format")
 
-        # -------------------------
-        # 3️⃣ Duplicate Email Check
-        # -------------------------
         if Applicant.query.filter_by(email=email).first():
             raise ValueError("Email already exists")
 
-        # -------------------------
-        # 4️⃣ File Type Validation
-        # -------------------------
-        if not file.filename.lower().endswith(".pdf"):
+        if not validate_file_type(file.filename):
             raise ValueError("Only PDF files are allowed")
 
-        # -------------------------
-        # 5️⃣ Date of Birth Processing + Age Check
-        # -------------------------
+        if not validate_file_size(file):
+            raise ValueError("File size must be under 5MB")
+
         dob_str = data.get("date_of_birth")
         dob_obj = None
 
@@ -59,9 +45,6 @@ class ApplicantService:
             if age < 18:
                 raise ValueError("Applicant must be at least 18 years old")
 
-        # -------------------------
-        # 6️⃣ Create Applicant FIRST
-        # -------------------------
         applicant = Applicant(
             first_name=data.get("first_name").strip(),
             last_name=data.get("last_name").strip(),
@@ -73,26 +56,19 @@ class ApplicantService:
             college=data.get("college"),
             work_experience=data.get("work_experience"),
             preferred_japanese_course=data.get("preferred_japanese_course"),
-            skills=data.get("skills", []),
-            language=data.get("language", []),
-            social_links=data.get("social_links", []),
+            skills=data.getlist("skills"),
+            language=data.getlist("language"),
+            social_links=data.getlist("social_links"),
             professional_summary=data.get("professional_summary"),
             comments=data.get("comments"),
             created_at=datetime.utcnow()
         )
 
         db.session.add(applicant)
-        db.session.flush()  # Generates applicant_id without commit
+        db.session.flush()
 
-
-        # -------------------------
-        # 7️⃣ Upload CV to Cloudinary (using applicant_id)
-        # -------------------------
         cloud_url = upload_cv(file, applicant.applicant_id)
 
-        # -------------------------
-        # 8️⃣ Save Document
-        # -------------------------
         document = Document(
             applicant_id=applicant.applicant_id,
             file_name=file.filename,
@@ -104,25 +80,37 @@ class ApplicantService:
         db.session.add(document)
         db.session.commit()
 
+        # Import here to avoid circular import
+        from app.services.email_service import EmailService
+
+        # Send application confirmation email
+        try:
+            EmailService.send_application_received_email(
+                applicant.email,
+                applicant.first_name
+            )
+        except Exception as e:
+            print("Email sending failed:", e)
+
         return applicant
-    
-    #For applicant to view their application
+
+    # For applicant to view their application
     @staticmethod
     def get_applicant_by_id(applicant_id):
         applicant = Applicant.query.get(applicant_id)
-        
+
         if not applicant:
             raise ValueError("Applicant not found")
-        
+
         return applicant
-    
+
     @staticmethod
     def delete_applicant(applicant_id):
         applicant = Applicant.query.get(applicant_id)
-        
+
         if not applicant:
             raise ValueError("Applicant not found")
-        
+
         db.session.delete(applicant)
         db.session.commit()
 

@@ -23,11 +23,7 @@ export const CVUploadSection = ({ onFileSelect }: CVUploadSectionProps) => {
 
 	const validateFile = (file: File): boolean => {
 		const maxSize = 5 * 1024 * 1024; // 5MB
-		const allowedTypes = [
-			"application/pdf",
-			"application/msword",
-			"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-		];
+		const allowedTypes = ["application/pdf"];
 
 		if (file.size > maxSize) {
 			setError("File size must be less than 5MB");
@@ -96,7 +92,7 @@ export const CVUploadSection = ({ onFileSelect }: CVUploadSectionProps) => {
 			</div>
 			{!file && (
 				<p className="text-sm text-slate-600 mb-4">
-					Please upload your CV in PDF or Word format (max 5MB)
+					Only PDF files are allowed (max 5MB)
 				</p>
 			)}
 
@@ -140,14 +136,14 @@ export const CVUploadSection = ({ onFileSelect }: CVUploadSectionProps) => {
 							</span>
 							<input
 								type="file"
-								accept=".pdf,.doc,.docx"
+								accept=".pdf"
 								onChange={handleFileSelect}
 								className="hidden"
 							/>
 						</label>
 
 						<p className="text-xs text-slate-500 mt-4">
-							Accepted formats: PDF, DOC, DOCX (Max 5MB)
+							Accepted format: PDF (Max 5MB)
 						</p>
 					</div>
 				</div>

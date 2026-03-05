@@ -32,7 +32,7 @@ class AuthService:
         admin = Admin.query.filter_by(email=email).first()
 
         if not admin:
-            admin = Admin(email=email, name=name)
+            admin = Admin(firebase_uid=decoded.get("uid"), username=name if name else email.split("@")[0], email=email)
             db.session.add(admin)
             db.session.commit()
 
@@ -44,27 +44,13 @@ class AuthService:
     
     @staticmethod
     def applicant_login(token):
-
         decoded = AuthService.verify_firebase_token(token)
-        email, name = AuthService.extract_user_info(decoded)
-
+        email, _ = AuthService.extract_user_info(decoded)
+    
         applicant = Applicant.query.filter_by(email=email).first()
-
-        if not applicant:
-            name_parts = name.split()
-            first_name = name_parts[0] if len(name_parts) > 0 else ""
-            last_name = name_parts[1] if len(name_parts) > 1 else ""
-
-            applicant = Applicant(
-                first_name=first_name,
-                last_name=last_name,
-                email=email
-            )
-            db.session.add(applicant)
-            db.session.commit()
-
+    
         return {
             "role": "applicant",
-            "applicant_id": applicant.applicant_id,
-            "email": applicant.email
+            "applicant_id": applicant.applicant_id if applicant else None,
+            "email": email
         }

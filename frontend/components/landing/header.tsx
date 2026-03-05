@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const Header = () => {
 	const isSignedIn = false; // Replace with actual authentication logic
 	return (

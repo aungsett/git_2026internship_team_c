@@ -1,10 +1,9 @@
+from app.models.admin import Admin
 from app.models.applicant import Applicant
 from app.models.review import ApplicationReview
-from app.models.document import Document
 from app.extensions import db
 import csv
 import io
-
 
 class AdminService:
 
@@ -66,14 +65,18 @@ class AdminService:
 
     @staticmethod
     def review_application(applicant_id, status, comments, admin_id):
-            
+    
         if not status or not admin_id:
             raise ValueError("Status and Admin ID required")
-
+    
+        admin = Admin.query.get(admin_id)
+        if not admin:
+            raise ValueError("Admin not found")
+    
         review = ApplicationReview.query.filter_by(
             applicant_id=applicant_id
         ).first()
-
+    
         if review:
             review.status = status
             review.comments = comments
@@ -84,9 +87,8 @@ class AdminService:
                 status=status,
                 comments=comments
             )
-                
             db.session.add(review)
-
+    
         db.session.commit()
         return True
         
