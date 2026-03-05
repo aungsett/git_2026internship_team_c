@@ -1,4 +1,5 @@
 from flask_mail import Message
+from flask import current_app
 from app.extensions import mail
 
 class EmailService:
