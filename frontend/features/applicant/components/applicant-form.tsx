@@ -51,7 +51,7 @@ export const ApplicantForm = ({
 								Date of Birth
 							</label>
 							<input
-								type="text"
+								type="date"
 								name="dateOfBirth"
 								value={formData.dateOfBirth}
 								onChange={handleInputChange}
