@@ -30,7 +30,7 @@ class ApplicantService:
             raise ValueError("Only PDF files are allowed")
 
         if not validate_file_size(file):
-            raise ValueError("File size must be under 2MB")
+            raise ValueError("File size must be under 5MB")
 
         dob_str = data.get("date_of_birth")
         dob_obj = None
