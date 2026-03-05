@@ -7,7 +7,14 @@ class EmailService:
         msg = Message(
             subject="Application Received",
             recipients=[email],
-            sender="teamc.webapp@gmail.com"  # FORCING IT HERE
+            sender=current_app.config['MAIL_USERNAME']
         )
-        msg.body = f"Hi {first_name},\n\nThank you for applying!"
+        msg.body = f"""Hi {first_name},
+
+        Thank you for applying! We have received your application and our team will review it shortly.
+        
+        You will hear back from us once the review is complete.
+        
+        Best regards,
+        Team C"""
         mail.send(msg)
