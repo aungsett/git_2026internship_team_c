@@ -2,7 +2,7 @@ import re
 
 EMAIL_REGEX = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
 ALLOWED_EXTENSIONS = {'pdf'}
-MAX_FILE_SIZE_MB = 2
+MAX_FILE_SIZE_MB = 5
 
 def validate_email(email):
     """Returns True if email format is valid"""
