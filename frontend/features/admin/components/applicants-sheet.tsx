@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Application } from "@/lib/types";
+import { useRouter } from "next/navigation";
 // Status badge styling
 const getStatusStyle = (status: string) => {
 	switch (status) {
@@ -26,6 +27,7 @@ export const ApplicantsSheet = ({
 	endIdx: number;
 }) => {
 	const paginatedApplications = filteredApplications.slice(startIdx, endIdx);
+	const router = useRouter();
 	return (
 		<div className="overflow-x-auto rounded-lg bg-white shadow-sm">
 			<table className="w-full">
@@ -106,6 +108,11 @@ export const ApplicantsSheet = ({
 								<Button
 									variant="link"
 									className="text-blue-600"
+									onClick={() => {
+										router.push(
+											`/dashboard/applicant-id=${app.id}`,
+										);
+									}}
 								>
 									View Details
 								</Button>
