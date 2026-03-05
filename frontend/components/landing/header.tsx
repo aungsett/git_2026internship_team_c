@@ -24,9 +24,9 @@ export const Header = () => {
 						<button className="font-semibold px-5 py-2 rounded-lg hover:bg-blue-600 hover:text-white transition-all">
 							Help
 						</button>
-						<button className="font-semibold px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-800 transition-all">
+						<Link href="/login" className="font-semibold px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-800 transition-all">
 							Log In
-						</button>
+						</Link>
 					</>
 				) : (
 					<>
