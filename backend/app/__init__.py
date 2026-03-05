@@ -11,13 +11,6 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    # Email Configuration (ensure these are in your Config class or .env)
-    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-    app.config['MAIL_PORT'] = 587
-    app.config['MAIL_USE_TLS'] = True
-    app.config['MAIL_USERNAME'] = Config.MAIL_USERNAME
-    app.config['MAIL_PASSWORD'] = Config.MAIL_PASSWORD
-
     # Allow frontend (localhost:3000) to call the backend
     CORS(app, origins=["http://localhost:3000"])
 
