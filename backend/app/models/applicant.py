@@ -54,5 +54,13 @@ class Applicant(db.Model):
             "phone_number": self.phone_number,
             "skills": self.skills,
             "summary": self.professional_summary,
-            "created_at": self.created_at.isoformat() if self.created_at else None
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "date_of_birth": self.date_of_birth.isoformat() if self.date_of_birth else None,
+            "work_experience": self.work_experience,
+            "qualification": self.qualification,
+            "address": self.address,
+            "college": self.college,
+            "preferred_japanese_course": self.preferred_japanese_course,
+            "language": self.language,
+            "social_links": self.social_links,
         }
