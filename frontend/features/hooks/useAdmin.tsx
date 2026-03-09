@@ -19,8 +19,7 @@ const filterAndSortApplications = (
 		const matchesQualification =
 			qualification === "any" || app.qualification === qualification;
 		const matchesExperience =
-			experience === "any" ||
-			String(app.work_experience) === experience;
+			experience === "any" || String(app.work_experience) === experience;
 		const matchesCourse =
 			course === "any" || app.preferred_japanese_course === course;
 		return (

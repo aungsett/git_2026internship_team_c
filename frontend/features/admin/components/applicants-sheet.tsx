@@ -29,7 +29,6 @@ export const ApplicantsSheet = ({
 }) => {
 	const paginatedApplications = filteredApplications.slice(startIdx, endIdx);
 	const router = useRouter();
-
 	return (
 		<div className="overflow-x-auto rounded-lg bg-white shadow-sm">
 			<table className="w-full">
@@ -59,9 +58,9 @@ export const ApplicantsSheet = ({
 					</tr>
 				</thead>
 				<tbody>
-					{paginatedApplications.map((app) => (
+					{paginatedApplications.map((app, index) => (
 						<tr
-							key={app.applicant_id}
+							key={index}
 							className="border-b border-gray-200 hover:bg-gray-50"
 						>
 							<td className="px-6 py-4">
@@ -98,14 +97,13 @@ export const ApplicantsSheet = ({
 							</td>
 							<td className="px-6 py-4">
 								<p className="text-sm text-gray-600">
-									{new Date(app.created_at).toLocaleDateString(
-										"en-US",
-										{
-											year: "numeric",
-											month: "short",
-											day: "numeric",
-										},
-									)}
+									{new Date(
+										app.created_at,
+									).toLocaleDateString("en-US", {
+										year: "numeric",
+										month: "short",
+										day: "numeric",
+									})}
 								</p>
 							</td>
 							<td className="px-6 py-4">
@@ -114,7 +112,7 @@ export const ApplicantsSheet = ({
 									className="text-blue-600"
 									onClick={() => {
 										router.push(
-											`/dashboard/applicant-id=${app.applicant_id}`,
+											`/dashboard/applicant-id=${app.id}`,
 										);
 									}}
 								>
