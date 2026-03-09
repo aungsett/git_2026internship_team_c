@@ -1,28 +1,33 @@
 import { Download, GraduationCap, Save } from "lucide-react";
 import { StatusUpdate } from "./status-update";
-import { StatusType } from "@/lib/types";
+import { Applicant, StatusType } from "@/lib/types";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 export const ApplicationHeader = ({
-	applicationNumber,
-	appliedDate,
-	applicantName,
 	position,
+	applicant,
 	status,
 	setStatus,
 }: {
-	applicationNumber: string;
-	appliedDate: string;
-	applicantName: string;
+	applicant: Applicant;
 	position: string;
 	status: StatusType;
 	setStatus: (status: StatusType) => void;
 }) => {
+	const { applicant_id, first_name, last_name, created_at, document_url } =
+		applicant;
+	const applicantName = `${first_name} ${last_name}`;
+	const appliedDate = new Date(created_at).toLocaleDateString("en-US", {
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	});
 	return (
 		<div className="flex items-center justify-between relative bg-white rounded-xl w-full p-6 border border-solid shadow-[0px_1px_2px_#0000000d]">
 			<div className="inline-flex flex-col items-start gap-1">
 				<div className="flex items-center gap-2 relative self-stretch w-full flex-[0_0_auto]">
 					<p className="font-bold text-slate-500 text-xs tracking-[1.20px] leading-4 whitespace-nowrap">
-						APPLICATION #{applicationNumber}
+						APPLICATION #{applicant_id}
 					</p>
 
 					<span
@@ -57,20 +62,17 @@ export const ApplicationHeader = ({
 
 				<StatusUpdate value={status} onChange={setStatus} />
 				<div className="flex items-center gap-2">
-					<Button
-						variant={"outline"}
-						className="flex gap-2 items-center"
-						onClick={() => {
-							// Implement download functionality here
-							window.open(
-								"https://res.cloudinary.com/dfff6ltsv/image/upload/v1771394265/ky54au64lww32zl0bsku.pdf",
-								"_blank",
-							);
-						}}
-					>
-						{" "}
-						<Download /> Download Resume
-					</Button>
+					<Link href={document_url} passHref>
+						<a download>
+							<Button
+								variant={"outline"}
+								className="flex gap-2 items-center"
+							>
+								{" "}
+								<Download /> Download Resume
+							</Button>
+						</a>
+					</Link>
 					<Button
 						disabled
 						className="flex gap-2 items-center bg-blue-600 hover:bg-blue-700"
