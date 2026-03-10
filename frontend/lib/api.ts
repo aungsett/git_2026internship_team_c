@@ -30,13 +30,13 @@ export const api = {
 
   // CV Parsing
   parseCV: async (resumeText: string) => {
-    const response = await fetch(`${BASE_URL}/applicant/parse-cv`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ resume_text: resumeText }),
-    });
-    const data = await response.json();
-    if (!data.success) throw new Error(data.error);
-    return data;
+      const response = await fetch(`/api/parse-cv`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resume_text: resumeText }),
+      });
+      const data = await response.json();
+      if (!data.success) throw new Error(data.error);
+      return data;
   },
 };
