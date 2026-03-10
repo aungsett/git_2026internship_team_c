@@ -66,6 +66,7 @@ export const CVUploadSection = ({ onFileSelect, onTextExtracted }: CVUploadSecti
 			const text = await extractTextFromPDF(selectedFile);
 			onTextExtracted(text);
 		} catch (err) {
+			console.error("PDF extraction error:", err);
 			setError("Failed to extract text from PDF. Please try another file.");
 		}
 	};
