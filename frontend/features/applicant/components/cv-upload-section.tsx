@@ -2,12 +2,16 @@
 
 import { useState } from "react";
 import { Upload, File, X, Stars } from "lucide-react";
+import * as pdfjsLib from "pdfjs-dist";
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 interface CVUploadSectionProps {
 	onFileSelect: (file: File | null) => void;
+	onTextExtracted: (text: string) => void;
 }
 
-export const CVUploadSection = ({ onFileSelect }: CVUploadSectionProps) => {
+export const CVUploadSection = ({ onFileSelect, onTextExtracted }: CVUploadSectionProps) => {
 	const [file, setFile] = useState<File | null>(null);
 	const [isDragging, setIsDragging] = useState(false);
 	const [error, setError] = useState<string>("");
@@ -22,7 +26,7 @@ export const CVUploadSection = ({ onFileSelect }: CVUploadSectionProps) => {
 	};
 
 	const validateFile = (file: File): boolean => {
-		const maxSize = 5 * 1024 * 1024; // 5MB
+		const maxSize = 5 * 1024 * 1024;
 		const allowedTypes = ["application/pdf"];
 
 		if (file.size > maxSize) {
@@ -31,11 +35,39 @@ export const CVUploadSection = ({ onFileSelect }: CVUploadSectionProps) => {
 		}
 
 		if (!allowedTypes.includes(file.type)) {
-			setError("Only PDF and Word documents are accepted");
+			setError("Only PDF files are allowed");
 			return false;
 		}
 
 		return true;
+	};
+
+	const extractTextFromPDF = async (file: File): Promise<string> => {
+		const arrayBuffer = await file.arrayBuffer();
+		const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+		let fullText = "";
+
+		for (let i = 1; i <= pdf.numPages; i++) {
+			const page = await pdf.getPage(i);
+			const content = await page.getTextContent();
+			const pageText = content.items
+				.map((item: any) => item.str)
+				.join(" ");
+			fullText += pageText + "\n";
+		}
+
+		return fullText;
+	};
+
+	const processFile = async (selectedFile: File) => {
+		setFile(selectedFile);
+		onFileSelect(selectedFile);
+		try {
+			const text = await extractTextFromPDF(selectedFile);
+			onTextExtracted(text);
+		} catch (err) {
+			setError("Failed to extract text from PDF. Please try another file.");
+		}
 	};
 
 	const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -45,8 +77,7 @@ export const CVUploadSection = ({ onFileSelect }: CVUploadSectionProps) => {
 
 		const droppedFile = e.dataTransfer.files[0];
 		if (droppedFile && validateFile(droppedFile)) {
-			setFile(droppedFile);
-			onFileSelect(droppedFile);
+			processFile(droppedFile);
 		}
 	};
 
@@ -54,8 +85,7 @@ export const CVUploadSection = ({ onFileSelect }: CVUploadSectionProps) => {
 		setError("");
 		const selectedFile = e.target.files?.[0];
 		if (selectedFile && validateFile(selectedFile)) {
-			setFile(selectedFile);
-			onFileSelect(selectedFile);
+			processFile(selectedFile);
 		}
 	};
 
@@ -63,6 +93,7 @@ export const CVUploadSection = ({ onFileSelect }: CVUploadSectionProps) => {
 		setFile(null);
 		setError("");
 		onFileSelect(null);
+		onTextExtracted("");
 	};
 
 	const formatFileSize = (bytes: number) => {
@@ -70,9 +101,7 @@ export const CVUploadSection = ({ onFileSelect }: CVUploadSectionProps) => {
 		const k = 1024;
 		const sizes = ["Bytes", "KB", "MB"];
 		const i = Math.floor(Math.log(bytes) / Math.log(k));
-		return (
-			Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i]
-		);
+		return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
 	};
 
 	return (
@@ -108,19 +137,12 @@ export const CVUploadSection = ({ onFileSelect }: CVUploadSectionProps) => {
 					}`}
 				>
 					<div className="flex flex-col items-center gap-4">
-						<div
-							className={`rounded-full p-3 ${isDragging ? "bg-blue-100" : "bg-slate-100"}`}
-						>
+						<div className={`rounded-full p-3 ${isDragging ? "bg-blue-100" : "bg-slate-100"}`}>
 							<Upload
 								size={32}
-								className={
-									isDragging
-										? "text-blue-600"
-										: "text-slate-600"
-								}
+								className={isDragging ? "text-blue-600" : "text-slate-600"}
 							/>
 						</div>
-
 						<div>
 							<p className="text-base font-medium text-slate-900">
 								Drag and drop your CV here
@@ -129,7 +151,6 @@ export const CVUploadSection = ({ onFileSelect }: CVUploadSectionProps) => {
 								or click to browse your computer
 							</p>
 						</div>
-
 						<label className="mt-4">
 							<span className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors cursor-pointer">
 								Choose File
@@ -141,7 +162,6 @@ export const CVUploadSection = ({ onFileSelect }: CVUploadSectionProps) => {
 								className="hidden"
 							/>
 						</label>
-
 						<p className="text-xs text-slate-500 mt-4">
 							Accepted format: PDF (Max 5MB)
 						</p>
