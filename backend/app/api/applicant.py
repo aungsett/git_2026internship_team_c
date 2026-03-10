@@ -51,8 +51,17 @@ def delete_applicant(applicant_id):
     except ValueError as e:
         return jsonify({"success": False, "error": str(e)}), 404
 
-@applicant_bp.route("/parse-cv", methods=["POST"])
+@applicant_bp.route("/parse-cv", methods=["POST", "OPTIONS"])
 def parse_cv():
+    if request.method == "OPTIONS":
+        from flask import make_response
+        response = make_response(jsonify({}), 200)
+        response.headers["Access-Control-Allow-Origin"] = "http://localhost:3000"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+        response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        return response
+
     try:
         data = request.get_json()
         if not data or not data.get("resume_text"):

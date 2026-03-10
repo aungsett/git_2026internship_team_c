@@ -23,6 +23,7 @@ export default function Page() {
 		linkedIn: "",
 		portfolioGithub: "",
 		additionalNotes: "",
+		professionalSummary: "",
 		acceptTerms: false,
 	});
 	const [cvFile, setCvFile] = useState<File | null>(null);
@@ -44,6 +45,42 @@ export default function Page() {
 		}));
 	};
 
+	const handleTextExtracted = async (text: string) => {
+		if (!text) return;
+		setParseAI(true);
+		try {
+			const result = await api.parseCV(text);
+			const parsed = result.data;
+
+			setFormData((prev) => ({
+				...prev,
+				firstName: parsed.first_name || prev.firstName,
+				lastName: parsed.last_name || prev.lastName,
+				dateOfBirth: parsed.date_of_birth || prev.dateOfBirth,
+				phone: parsed.phone_number || prev.phone,
+				email: parsed.email || prev.email,
+				currentAddress: parsed.address || prev.currentAddress,
+				highestQualification: parsed.qualification || prev.highestQualification,
+				college: parsed.college || prev.college,
+				yearsOfExperience: parsed.work_experience != null
+					? String(parsed.work_experience)
+					: prev.yearsOfExperience,
+				coreSkills: parsed.skills?.length
+					? parsed.skills.join(", ")
+					: prev.coreSkills,
+				languagesKnown: parsed.language?.length
+					? parsed.language.join(", ")
+					: prev.languagesKnown,
+				professionalSummary: parsed.professional_summary || prev.professionalSummary,
+			}));
+		} catch (err) {
+			// Silently fail — user can fill form manually
+			console.error("CV parsing failed:", err);
+		} finally {
+			setParseAI(false);
+		}
+	};
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError("");
@@ -58,7 +95,6 @@ export default function Page() {
 		try {
 			const payload = new FormData();
 
-			// Basic fields
 			payload.append("first_name", formData.firstName);
 			payload.append("last_name", formData.lastName);
 			payload.append("email", formData.email);
@@ -70,8 +106,8 @@ export default function Page() {
 			payload.append("work_experience", formData.yearsOfExperience);
 			payload.append("preferred_japanese_course", formData.preferredJapaneseCourse);
 			payload.append("comments", formData.additionalNotes);
+			payload.append("professional_summary", formData.professionalSummary);
 
-			// Arrays — split comma separated strings
 			formData.coreSkills
 				.split(",")
 				.map((s) => s.trim())
@@ -84,11 +120,9 @@ export default function Page() {
 				.filter(Boolean)
 				.forEach((lang) => payload.append("language", lang));
 
-			// Social links
 			if (formData.linkedIn) payload.append("social_links", formData.linkedIn);
 			if (formData.portfolioGithub) payload.append("social_links", formData.portfolioGithub);
 
-			// CV file
 			payload.append("file", cvFile);
 
 			await api.submitApplication(payload);
@@ -132,7 +166,10 @@ export default function Page() {
 						</p>
 					</div>
 					<form onSubmit={handleSubmit} className="space-y-6">
-						<CVUploadSection onFileSelect={setCvFile} />
+						<CVUploadSection
+							onFileSelect={setCvFile}
+							onTextExtracted={handleTextExtracted}
+						/>
 						<ApplicantForm
 							formData={formData}
 							handleInputChange={handleInputChange}
