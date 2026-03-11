@@ -54,7 +54,7 @@ class CVParserService:
         if not api_key:
             raise ValueError("GEMINI_API_KEY is not configured")
 
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key={api_key}"
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key={api_key}"
 
         payload = {
             "contents": [
