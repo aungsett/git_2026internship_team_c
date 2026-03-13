@@ -33,6 +33,7 @@ def get_single_job(id):
     except ValueError as e:
         return jsonify({"success": False, "error": str(e)}), 404
 
+
 @job_bp.route("/", methods=["POST"])
 @admin_required
 def create_job():
@@ -51,3 +52,19 @@ def create_job():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
+@job_bp.route("/<int:id>", methods=["DELETE"])
+@admin_required
+def delete_job(id):
+    try:
+        JobService.delete_job(id)
+
+        return jsonify({
+            "success": True,
+            "message": "Job deleted successfully"
+        }), 200
+
+    except ValueError as e:
+        return jsonify({"success": False, "error": str(e)}), 404
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500

@@ -15,13 +15,12 @@ def upload_cv(file, applicant_id):
     try:
         result = cloudinary.uploader.upload(
             file,
-            resource_type="raw",
+            resource_type="auto",
             folder="ats_cvs",
             public_id=f"applicant_{applicant_id}_cv",
             overwrite=True
         )
 
-        # ✅ RETURN STRING ONLY
         return result["secure_url"]
 
     except Exception as e:

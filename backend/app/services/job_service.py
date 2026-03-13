@@ -92,3 +92,16 @@ class JobService:
         db.session.commit()
 
         return True
+
+    @staticmethod
+    def delete_job(job_id):
+
+        job = Job.query.get(job_id)
+
+        if not job:
+            raise ValueError("Job not found")
+
+        db.session.delete(job)
+        db.session.commit()
+
+        return True
