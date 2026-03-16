@@ -1,6 +1,5 @@
 import os
 from dotenv import load_dotenv
-
 load_dotenv()
 
 class Config:
@@ -21,8 +20,11 @@ class Config:
     MAIL_USERNAME = os.getenv('MAIL_USERNAME')
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
 
+    # Gemini API
+    GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+
     if not SQLALCHEMY_DATABASE_URI:
         raise ValueError("DATABASE_URL is missing. Check your .env file.")
-        
+
     if not MAIL_USERNAME or not MAIL_PASSWORD:
         raise ValueError("Email credentials (MAIL_USERNAME or MAIL_PASSWORD) are missing in .env")

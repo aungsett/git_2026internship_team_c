@@ -1,38 +1,33 @@
 from flask import Blueprint, request, jsonify
 from app.utils.decorators import applicant_required
 from app.services.applicant_service import ApplicantService
+from app.services.cv_parser_service import CVParserService
 from app.extensions import db
 
 applicant_bp = Blueprint("applicant", __name__)
 
-
 @applicant_bp.route("/submit", methods=["POST"])
-#@applicant_required
+# @applicant_required
 def submit_application():
     try:
         data = request.form
         file = request.files.get("file")
-
         applicant = ApplicantService.submit_application(data, file)
-
         return jsonify({
             "success": True,
             "message": "Application Submitted",
             "applicant_id": applicant.applicant_id
         }), 201
-
     except ValueError as e:
         return jsonify({"success": False, "error": str(e)}), 400
-
     except Exception as e:
         db.session.rollback()
         return jsonify({"success": False, "error": str(e)}), 500
-    
+
 @applicant_bp.route("/<int:applicant_id>", methods=["GET"])
 def get_applicant(applicant_id):
     try:
         applicant = ApplicantService.get_applicant_by_id(applicant_id)
-
         return jsonify({
             "success": True,
             "data": {
@@ -42,7 +37,6 @@ def get_applicant(applicant_id):
                 "email": applicant.email
             }
         })
-
     except ValueError as e:
         return jsonify({"success": False, "error": str(e)}), 404
 
@@ -50,34 +44,38 @@ def get_applicant(applicant_id):
 def delete_applicant(applicant_id):
     try:
         ApplicantService.delete_applicant(applicant_id)
-
         return jsonify({
             "success": True,
             "message": "Applicant deleted successfully"
         })
-
     except ValueError as e:
         return jsonify({"success": False, "error": str(e)}), 404
-    
-@applicant_bp.route("/parse-cv", methods=["POST"])
-@applicant_required
+
+@applicant_bp.route("/parse-cv", methods=["POST", "OPTIONS"])
 def parse_cv():
+    if request.method == "OPTIONS":
+        from flask import make_response
+        response = make_response(jsonify({}), 200)
+        response.headers["Access-Control-Allow-Origin"] = "http://localhost:3000"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+        response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        return response
 
-    file = request.files.get("file")
+    try:
+        data = request.get_json()
+        if not data or not data.get("resume_text"):
+            return jsonify({"success": False, "error": "resume_text is required"}), 400
 
-    if not file:
-        return jsonify({"error": "No file uploaded"}), 400
+        resume_text = data.get("resume_text")
+        parsed = CVParserService.parse(resume_text)
 
-    # Temporary fake AI response (replace later with Gemini)
-    parsed_data = {
-        "first_name": "John",
-        "last_name": "Doe",
-        "skills": ["Python", "Machine Learning"],
-        "professional_summary": "AI parsed CV summary",
-        "work_experience": 2
-    }
+        return jsonify({
+            "success": True,
+            "data": parsed
+        }), 200
 
-    return jsonify({
-        "success": True,
-        "data": parsed_data
-    }), 200
+    except ValueError as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
