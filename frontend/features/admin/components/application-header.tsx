@@ -62,16 +62,14 @@ export const ApplicationHeader = ({
 
 				<StatusUpdate value={status} onChange={setStatus} />
 				<div className="flex items-center gap-2">
-					<Link href={document_url} passHref>
-						<a download>
-							<Button
-								variant={"outline"}
-								className="flex gap-2 items-center"
-							>
-								{" "}
-								<Download /> Download Resume
-							</Button>
-						</a>
+					<Link href={document_url} passHref legacyBehavior>
+						<Button
+							variant={"outline"}
+							className="flex gap-2 items-center"
+						>
+							{" "}
+							<Download /> Download Resume
+						</Button>
 					</Link>
 					<Button
 						disabled
