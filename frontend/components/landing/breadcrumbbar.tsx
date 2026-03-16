@@ -25,7 +25,7 @@ export const BreadcrumbBar = () => {
 	const segments = pathname.split("/").filter(Boolean);
 
 	return (
-		<Breadcrumb className="px-10">
+		<Breadcrumb className="pt-[60px] px-4 pb-8">
 			<BreadcrumbList>
 				{/* Home breadcrumb */}
 				<BreadcrumbItem>
