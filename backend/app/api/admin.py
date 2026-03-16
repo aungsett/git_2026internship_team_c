@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify, Response
 from app.services.admin_service import AdminService
+from app.services.job_service import JobService
 from app.utils.decorators import admin_required
 
 
@@ -81,3 +82,29 @@ def export_csv():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
+
+
+@admin_bp.route("/jobs", methods=["POST"])
+@admin_required
+def create_job():
+    try:
+        data = request.json
+
+        JobService.create_job(data)
+
+        return jsonify({
+            "success": True,
+            "message": "Job created successfully"
+        }), 201
+
+    except ValueError as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 400
+
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
