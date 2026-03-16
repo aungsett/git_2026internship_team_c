@@ -1,9 +1,13 @@
 import Link from "next/link";
+import { auth } from "@/lib/firebase";
+import { Button } from "../ui/button";
+import { useRouter } from "next/navigation";
 
 export const Header = () => {
-	const isSignedIn = false; // Replace with actual authentication logic
+	const router = useRouter();
+	const user = auth.currentUser;
 	return (
-		<header className="fixed top-0 left-0 w-full bg-white border-b border-slate-200 flex items-center justify-between mb-4 px-4 py-2 z-[1000]">
+		<header className="fixed top-0 left-0 w-full bg-white border-b border-slate-200 flex items-center justify-between px-4 py-2 z-[1000]">
 			<h1 className="text-xl font-bold text-slate-900 flex items-center">
 				<img
 					src="/logo.png"
@@ -13,7 +17,7 @@ export const Header = () => {
 				ATS Portal
 			</h1>
 			<div className="flex gap-4">
-				{!isSignedIn ? (
+				{user == null ? (
 					<>
 						<button className="font-semibold px-5 py-2 rounded-lg hover:bg-blue-600 hover:text-white transition-all">
 							Jobs
@@ -24,18 +28,34 @@ export const Header = () => {
 						<button className="font-semibold px-5 py-2 rounded-lg hover:bg-blue-600 hover:text-white transition-all">
 							Help
 						</button>
-						<Link href="/login" className="font-semibold px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-800 transition-all">
+						<Link
+							href="/login"
+							className="font-semibold px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-800 transition-all"
+						>
 							Log In
 						</Link>
 					</>
 				) : (
 					<>
-						<button className="font-semibold px-5 py-2 rounded-lg hover:bg-blue-600 hover:text-white transition-all">
+						<Button
+							onClick={() => router.push("/dashboard/create-job")}
+							className="bg-blue-600 text-white hover:text-white hover:bg-blue-700"
+						>
+							Create Job
+						</Button>
+						<Button
+							onClick={() => router.push("/dashboard")}
+							className="bg-blue-600 text-white hover:text-white hover:bg-blue-700"
+						>
 							Dashboard
-						</button>
-						<button className="font-semibold px-5 py-2 rounded-lg bg-red-600 text-white hover:bg-red-800 transition-all">
+						</Button>
+						<Button
+							// onClick={() => router.push("/logout")}
+							variant="outline"
+							className="text-red-500 border-red-500 hover:bg-red-500 hover:text-white transition-all"
+						>
 							Log Out
-						</button>
+						</Button>
 					</>
 				)}
 			</div>

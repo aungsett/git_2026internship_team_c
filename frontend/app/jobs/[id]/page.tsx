@@ -1,221 +1,183 @@
 "use client";
-import { useState } from "react";
-import { CVUploadSection } from "@/features/applicant/components/cv-upload-section";
-import { ApplicantForm } from "@/features/applicant/components/applicant-form";
-import { Loader } from "@/features/applicant/components/loader";
-import { api } from "@/lib/api";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import {
+	ArrowLeft,
+	MapPin,
+	Briefcase,
+	Calendar,
+	DollarSign,
+	Clock,
+	SendHorizonal,
+	Send,
+	Building2,
+} from "lucide-react";
 
 export default function Page() {
-	const [parseAI, setParseAI] = useState(false);
-	const [formData, setFormData] = useState({
-		firstName: "",
-		lastName: "",
-		dateOfBirth: "",
-		phone: "",
-		email: "",
-		currentAddress: "",
-		highestQualification: "",
-		college: "",
-		yearsOfExperience: "",
-		preferredJapaneseCourse: "",
-		coreSkills: "",
-		languagesKnown: "",
-		linkedIn: "",
-		portfolioGithub: "",
-		additionalNotes: "",
-		professionalSummary: "",
-		acceptTerms: false,
-	});
-	const [cvFile, setCvFile] = useState<File | null>(null);
-	const [loading, setLoading] = useState(false);
-	const [success, setSuccess] = useState(false);
-	const [error, setError] = useState("");
-
-	const handleInputChange = (
-		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-	) => {
-		const { name, value, type } = e.target;
-		const checked =
-			type === "checkbox"
-				? (e.target as HTMLInputElement).checked
-				: undefined;
-		setFormData((prev) => ({
-			...prev,
-			[name]: type === "checkbox" ? checked : value,
-		}));
-	};
-
-	const handleTextExtracted = async (text: string) => {
-		if (!text) return;
-		setParseAI(true);
-		try {
-			const result = await api.parseCV(text);
-			const parsed = result.data;
-
-			setFormData((prev) => ({
-				...prev,
-				firstName: parsed.first_name || prev.firstName,
-				lastName: parsed.last_name || prev.lastName,
-				dateOfBirth: parsed.date_of_birth || prev.dateOfBirth,
-				phone: parsed.phone_number || prev.phone,
-				email: parsed.email || prev.email,
-				currentAddress: parsed.address || prev.currentAddress,
-				highestQualification: parsed.qualification || prev.highestQualification,
-				college: parsed.college || prev.college,
-				yearsOfExperience: parsed.work_experience != null
-					? String(parsed.work_experience)
-					: prev.yearsOfExperience,
-				coreSkills: parsed.skills?.length
-					? parsed.skills.join(", ")
-					: prev.coreSkills,
-				languagesKnown: parsed.language?.length
-					? parsed.language.join(", ")
-					: prev.languagesKnown,
-				professionalSummary: parsed.professional_summary || prev.professionalSummary,
-			}));
-		} catch (err) {
-			// Silently fail — user can fill form manually
-			console.error("CV parsing failed:", err);
-		} finally {
-			setParseAI(false);
-		}
-	};
-
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
-		setError("");
-
-		if (!cvFile) {
-			setError("Please upload your CV before submitting.");
-			return;
-		}
-
-		setLoading(true);
-
-		try {
-			const payload = new FormData();
-
-			payload.append("first_name", formData.firstName);
-			payload.append("last_name", formData.lastName);
-			payload.append("email", formData.email);
-			payload.append("phone_number", formData.phone);
-			payload.append("address", formData.currentAddress);
-			payload.append("date_of_birth", formData.dateOfBirth);
-			payload.append("qualification", formData.highestQualification);
-			payload.append("college", formData.college);
-			payload.append("work_experience", formData.yearsOfExperience);
-			payload.append("preferred_japanese_course", formData.preferredJapaneseCourse);
-			payload.append("comments", formData.additionalNotes);
-			payload.append("professional_summary", formData.professionalSummary);
-
-			formData.coreSkills
-				.split(",")
-				.map((s) => s.trim())
-				.filter(Boolean)
-				.forEach((skill) => payload.append("skills", skill));
-
-			formData.languagesKnown
-				.split(",")
-				.map((s) => s.trim())
-				.filter(Boolean)
-				.forEach((lang) => payload.append("language", lang));
-
-			if (formData.linkedIn) payload.append("social_links", formData.linkedIn);
-			if (formData.portfolioGithub) payload.append("social_links", formData.portfolioGithub);
-
-			payload.append("file", cvFile);
-
-			await api.submitApplication(payload);
-			setSuccess(true);
-
-		} catch (err: any) {
-			setError(err.message || "Something went wrong. Please try again.");
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	if (success) {
-		return (
-			<div className="flex flex-col items-center justify-center min-h-screen bg-slate-50">
-				<div className="bg-white rounded-lg shadow p-10 text-center max-w-md">
-					<div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-						<svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-						</svg>
-					</div>
-					<h2 className="text-2xl font-bold text-slate-900 mb-2">Application Submitted!</h2>
-					<p className="text-slate-600">Thank you for applying. We will review your application and get back to you shortly.</p>
-				</div>
-			</div>
-		);
-	}
-
+	const details = [
+		{
+			icon: MapPin,
+			label: "LOCATION",
+			value: "San Francisco, CA (Hybrid)",
+		},
+		{
+			icon: Briefcase,
+			label: "EMPLOYMENT TYPE",
+			value: "Full-time",
+		},
+		{
+			icon: Building2,
+			label: "DEPARTMENT",
+			value: "Engineering",
+		},
+		{
+			icon: DollarSign,
+			label: "SALARY RANGE",
+			value: "$140,000-$180,000 / yr",
+		},
+		{
+			icon: Clock,
+			label: "EXPERIENCE REQUIRED",
+			value: "3-5 Years",
+		},
+		{
+			icon: Calendar,
+			label: "DEADLINE",
+			value: "October 31, 2027",
+		},
+	];
+	const expired = new Date(details[5].value).getTime() < Date.now();
 	return (
-		<div className="flex flex-col min-h-screen bg-slate-50">
-			{parseAI && <Loader setParseAI={setParseAI} />}
-			<div className="flex-1 w-full px-4 py-8 md:py-12">
-				<div className="max-w-4xl mx-auto">
-					<div className="mb-8">
-						<h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
-							Apply for Senior Software Engineer
+		<main className="min-h-screen px-10 py-0">
+			{/* Title Section */}
+			<div className="mb-8 flex justify-between">
+				<div className="flex items-start justify-between gap-4">
+					<div>
+						<h1 className="text-4xl font-bold text-slate-900 mb-2">
+							Software Engineer
 						</h1>
-						<p className="text-slate-600">
-							Please fill out the form below to submit your
-							application. This should take about 5-10 minutes.
+						<p className="text-sm text-slate-600">
+							Job ID: JOB-2024-001
 						</p>
 					</div>
-					<form onSubmit={handleSubmit} className="space-y-6">
-						<CVUploadSection
-							onFileSelect={setCvFile}
-							onTextExtracted={handleTextExtracted}
-						/>
-						<ApplicantForm
-							formData={formData}
-							handleInputChange={handleInputChange}
-						/>
-						<div className="flex items-start gap-3">
-							<input
-								type="checkbox"
-								name="acceptTerms"
-								id="acceptTerms"
-								checked={formData.acceptTerms}
-								onChange={handleInputChange}
-								className="mt-1 w-4 h-4 border-slate-300 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer"
-							/>
-							<label
-								htmlFor="acceptTerms"
-								className="text-sm text-slate-700"
-							>
-								I agree to the Terms of Service and Privacy
-								Policy regarding the storage and processing of
-								my application data.
-							</label>
-						</div>
+					{!expired ? (
+						<Badge
+							variant="outline"
+							className="bg-emerald-100 text-emerald-800 border-emerald-200"
+						>
+							OPEN
+						</Badge>
+					) : (
+						<Badge
+							variant="outline"
+							className="bg-red-100 text-red-800 border-red-200"
+						>
+							CLOSED
+						</Badge>
+					)}
+				</div>
 
-						{error && (
-							<div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-								<p className="text-sm text-red-700">{error}</p>
-							</div>
-						)}
-
-						<div className="flex flex-col items-center gap-3">
-							<div className="flex flex-col items-center gap-4 w-full">
-								<button
-									type="submit"
-									disabled={!formData.acceptTerms || loading}
-									className="w-1/2 px-8 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:bg-slate-300 disabled:cursor-not-allowed"
-								>
-									{loading ? "Submitting..." : "Submit Application"}
-								</button>
-							</div>
-							<p className="text-xs text-slate-600 mt-2">
-								Once submitted, you will receive a confirmation email.
-							</p>
-						</div>
-					</form>
+				{/* Action Buttons */}
+				<div className="flex gap-3">
+					{/* <Button variant="outline" className="gap-2">
+						Edit Job
+					</Button> */}
+					<Button
+						disabled={expired}
+						className="gap-2 bg-blue-600 hover:bg-blue-700"
+					>
+						Apply Now
+						<Send className="w-4 h-4 text-white" />
+					</Button>
 				</div>
 			</div>
-		</div>
+
+			<div className="flex gap-10">
+				{/* Main Content */}
+				<Card className="p-6 bg-white flex flex-col gap-6 h-fit max-w-5xl">
+					{/* Job Description */}
+					<div className="flex flex-col gap-4">
+						<h2 className="text-xl font-semibold text-slate-900">
+							Job Description
+						</h2>
+						<p className="text-slate-600 leading-relaxed">
+							We are seeking a talented Software Engineer to join
+							our core infrastructure team. In this role, you will
+							be responsible for designing, developing, and
+							maintaining scalable web applications and
+							distributed systems. The ideal candidate is a
+							self-starter with a passion for clean code, system
+							architecture, and solving complex technical
+							challenges. You will work closely with product
+							managers and designers to build features that impact
+							thousands of users globally.
+						</p>
+					</div>
+				</Card>
+
+				{/* Sidebar */}
+				<div className="space-y-6">
+					{/* Job Information */}
+					<Card className="p-6 bg-white top-8">
+						<h3 className="text-lg font-semibold text-slate-900 mb-6">
+							Job Information
+						</h3>
+						<div className="space-y-5">
+							{details.map((item, index) => {
+								const Icon = item.icon;
+								return (
+									<div
+										key={index}
+										className="flex items-center gap-3"
+									>
+										<Icon className="w-5 h-5 text-blue-600" />
+
+										<div className="">
+											<p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+												{item.label}
+											</p>
+											<p
+												className={`text-sm ${item.label === "DEADLINE" ? "text-red-500" : "text-slate-700"} font-medium`}
+											>
+												{item.value}
+											</p>
+										</div>
+									</div>
+								);
+							})}
+						</div>
+					</Card>
+
+					{/* Skills & Competencies */}
+					<Card className="p-6 bg-white">
+						<h3 className="text-lg font-semibold text-slate-900 mb-4">
+							Skills & Competencies
+						</h3>
+						<div className="flex flex-wrap gap-2">
+							{[
+								"React",
+								"Node.js",
+								"TypeScript",
+								"PostgreSQL",
+								"AWS Lambda",
+								"Docker",
+								"System Design",
+								"CI/CD",
+							].map((skill) => (
+								<Badge
+									key={skill}
+									variant="secondary"
+									className="bg-blue-50 text-blue-700 border-blue-200"
+								>
+									{skill}
+								</Badge>
+							))}
+						</div>
+					</Card>
+				</div>
+			</div>
+		</main>
 	);
 }
