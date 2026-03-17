@@ -6,28 +6,27 @@ from app.extensions import db
 
 class AuthService:
 
+
     @staticmethod
-    def verify_firebase_token(token):
+    def verify_token(token):
         if not token:
             raise ValueError("Token missing")
-
-        return firebase_auth.verify_id_token(token)
+        
+        decoded = firebase_auth.verify_id_token(token)
+        
+        return {
+            "uid": decoded.get("uid"),
+            "email": decoded.get("email"),
+            "name": decoded.get("name", "")
+        }
     
-    @staticmethod
-    def extract_user_info(decoded_token):
-        email = decoded_token.get("email")
-        name = decoded_token.get("name", "")
-
-        if not email:
-            raise ValueError("Email not found in token")
-
-        return email, name
     
     @staticmethod
     def admin_login(token):
 
-        decoded = AuthService.verify_firebase_token(token)
-        email, name = AuthService.extract_user_info(decoded)
+        decoded = AuthService.verify_token(token)
+        email = decoded["email"]
+        name = decoded["name"]
 
         admin = Admin.query.filter_by(email=email).first()
 
@@ -44,8 +43,8 @@ class AuthService:
     
     @staticmethod
     def applicant_login(token):
-        decoded = AuthService.verify_firebase_token(token)
-        email, _ = AuthService.extract_user_info(decoded)
+        decoded = AuthService.verify_token(token)
+        email, _ = decoded["email"]
     
         applicant = Applicant.query.filter_by(email=email).first()
     
@@ -54,3 +53,4 @@ class AuthService:
             "applicant_id": applicant.applicant_id if applicant else None,
             "email": email
         }
+    

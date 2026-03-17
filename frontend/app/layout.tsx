@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ConditionalLayout } from "@/components/ConditionalLayout";
+import { AuthProvider } from "@/app/context/AuthContext";
+
 
 export const metadata: Metadata = {
 	title: "ATS by Team C",
@@ -15,7 +17,9 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className="antialiased bg-slate-50">
-				<ConditionalLayout>{children}</ConditionalLayout>
+				<AuthProvider>
+					<ConditionalLayout>{children}</ConditionalLayout>
+				</AuthProvider>
 			</body>
 		</html>
 	);

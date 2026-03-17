@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false);
   const [resetSent, setResetSent] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
+  const { user, loading: authLoading } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,6 +80,12 @@ export default function AdminLoginPage() {
       setResetLoading(false);
     }
   };
+
+  useEffect(() => {
+  if (!authLoading && user) {
+    router.replace("/dashboard"); 
+    }
+  }, [user, authLoading, router]);
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center px-4">
