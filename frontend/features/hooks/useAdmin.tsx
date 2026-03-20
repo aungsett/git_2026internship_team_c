@@ -1,7 +1,8 @@
 "use client";
 import { Application, SortOrder } from "@/lib/types";
 import { useEffect, useMemo, useState } from "react";
-import { fetchApplications } from "@/lib/data";
+import { ApiError, fetchApplications } from "@/lib/data";
+import { useRouter } from "next/navigation";
 
 const filterAndSortApplications = (
 	apps: Application[],
@@ -40,6 +41,7 @@ const filterAndSortApplications = (
 };
 
 export const useAdmin = () => {
+	const router = useRouter();
 	const [applications, setApplications] = useState<Application[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
@@ -54,17 +56,13 @@ export const useAdmin = () => {
 	useEffect(() => {
 		const loadApplications = async () => {
 			try {
-				const admin = JSON.parse(localStorage.getItem("admin") || "{}");
-				const token = admin.token;
-
-				if (!token) {
-					setError("Not authenticated");
-					return;
-				}
-
-				const result = await fetchApplications(token);
+				const result = await fetchApplications();
 				setApplications(result.data);
 			} catch (err: any) {
+				if (err instanceof ApiError && err.status === 401) {
+					router.push("/login");
+					return;
+				}
 				setError(err.message || "Failed to load applications");
 			} finally {
 				setLoading(false);
@@ -72,7 +70,7 @@ export const useAdmin = () => {
 		};
 
 		loadApplications();
-	}, []);
+	}, [router]);
 
 	const filteredApplications = useMemo(() => {
 		return filterAndSortApplications(
