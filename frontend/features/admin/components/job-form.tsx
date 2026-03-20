@@ -102,22 +102,21 @@ export const JobForm = () => {
 	};
 
 	const handleSubmit = async (status: string) => {
-		setError("");
-		if (!formData.jobTitle) {
-			setError("Job title is required.");
-			return;
-		}
-		setLoading(true);
-		try {
-			const token = getToken();
-			await api.createJob(buildPayload(status), token);
-			setSuccess(true);
-			setTimeout(() => router.push("/dashboard"), 1500);
-		} catch (err: any) {
-			setError(err.message || "Something went wrong.");
-		} finally {
-			setLoading(false);
-		}
+	    setError("");
+	    if (!formData.jobTitle) {
+	        setError("Job title is required.");
+	        return;
+	    }
+	    setLoading(true);
+	    try {
+	        await api.createJob(buildPayload(status));
+	        setSuccess(true);
+	        setTimeout(() => router.push("/dashboard"), 1500);
+	    } catch (err: any) {
+	        setError(err.message || "Something went wrong.");
+	    } finally {
+	        setLoading(false);
+	    }
 	};
 
 	if (success) {
