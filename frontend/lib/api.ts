@@ -17,6 +17,21 @@ export const api = {
     return data;
   },
 
+  // Jobs (Admin)
+  createJob: async (payload: object) => {
+      const response = await fetch(`${BASE_URL}/admin/jobs`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+      if (!data.success) throw new Error(data.error);
+      return data;
+  },
+
   // Applicant
   submitApplication: async (formData: FormData) => {
     const response = await fetch(`${BASE_URL}/applicant/submit`, {

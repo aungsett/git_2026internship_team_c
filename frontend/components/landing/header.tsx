@@ -1,10 +1,66 @@
 import Link from "next/link";
 import { auth } from "@/lib/firebase";
 import { Button } from "../ui/button";
+import { useRouter } from "next/navigation";
+import { signOut } from "firebase/auth";
+import { getCsrfToken } from "@/lib/security";
+import { useEffect, useState } from "react";
 
 export const Header = () => {
-	const user = auth.currentUser;
-	console.log(user);
+	const router = useRouter();
+	const [isAuthenticated, setIsAuthenticated] = useState(false);
+	const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
+
+	useEffect(() => {
+		const checkSession = async () => {
+			if (!backendUrl) {
+				setIsAuthenticated(false);
+				return;
+			}
+
+			try {
+				const response = await fetch(`${backendUrl}/auth/session`, {
+					method: "GET",
+					credentials: "include",
+				});
+				setIsAuthenticated(response.ok);
+			} catch {
+				setIsAuthenticated(false);
+			}
+		};
+
+		checkSession();
+	}, [backendUrl]);
+
+	const handleLogout = async () => {
+		const csrfToken = getCsrfToken();
+		const headers: HeadersInit = {};
+
+		if (csrfToken) {
+			headers["X-CSRF-Token"] = csrfToken;
+		}
+
+		try {
+			if (backendUrl) {
+				await fetch(`${backendUrl}/auth/logout`, {
+					method: "POST",
+					credentials: "include",
+					headers,
+				});
+			}
+		} catch {
+			// Redirect should still happen even if backend is temporarily unavailable.
+		} finally {
+			try {
+				await signOut(auth);
+			} catch {
+				// Ignore Firebase sign-out issues and continue navigation.
+			}
+			setIsAuthenticated(false);
+			router.push("/");
+		}
+	};
+
 	return (
 		<header className="fixed top-0 left-0 w-full bg-white border-b border-slate-200 flex items-center justify-between px-4 py-2 z-[1000]">
 			<div className="flex items-center gap-10">
@@ -52,7 +108,7 @@ export const Header = () => {
 				</div>
 			</div>
 			<div className="flex gap-4">
-				{user == null ? (
+				{!isAuthenticated ? (
 					<>
 						<Link href="/login">
 							<Button className="bg-blue-600 text-white hover:text-white hover:bg-blue-700">
@@ -68,14 +124,13 @@ export const Header = () => {
 							</Button>
 						</Link>
 
-						<Link href="/dashboard/create-job">
-							<Button
-								variant="outline"
-								className="text-red-500 border-red-500 hover:bg-red-500 hover:text-white transition-all"
-							>
-								Log Out
-							</Button>
-						</Link>
+						<Button
+							onClick={handleLogout}
+							variant="outline"
+							className="text-red-500 border-red-500 hover:bg-red-500 hover:text-white transition-all"
+						>
+							Log Out
+						</Button>
 					</>
 				)}
 			</div>

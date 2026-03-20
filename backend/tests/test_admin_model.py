@@ -32,7 +32,7 @@ def test_default_role(app):
     db.session.add(admin)
     db.session.commit()
 
-    assert admin.role == "recruiter"
+    assert admin.role == "admin"
 
 
 # 3. Test Duplicate Email Fails
