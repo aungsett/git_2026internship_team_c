@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ConditionalLayout } from "@/components/ConditionalLayout";
+import { Poppins } from "next/font/google";
+
+const poppins = Poppins({
+	subsets: ["latin"],
+	weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+});
 
 export const metadata: Metadata = {
 	title: "ATS by Team C",
@@ -14,7 +20,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className="antialiased bg-slate-50">
+			<body className={`${poppins.className} antialiased bg-slate-50`}>
 				<ConditionalLayout>{children}</ConditionalLayout>
 			</body>
 		</html>
