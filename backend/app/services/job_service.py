@@ -22,12 +22,13 @@ class JobService:
                 "location": job.location,
                 "employment_type": job.employment_type,
                 "department": job.department,
+                "description":job.description,
                 "salary_range": job.salary_range,
                 "experience_required": job.experience_required,
                 "skills": job.skills,
                 "application_deadline": job.application_deadline.isoformat() if job.application_deadline else None,
                 "status": job.status,
-                "created_at": job.created_at.isoformat()
+                "created_at": job.created_at.isoformat()                
             })
 
         return {
@@ -38,7 +39,7 @@ class JobService:
     
     @staticmethod
     def get_single_job(job_id):
-        job = Job.query.get(job_id)
+        job = Job.query.filter_by(job_id=job_id).first()
 
         if not job:
             raise ValueError("Job not found")
