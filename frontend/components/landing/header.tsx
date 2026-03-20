@@ -73,7 +73,7 @@ export const Header = () => {
 					ATS Portal
 				</h1>
 				<div className="flex gap-10">
-					{user == null ? (
+					{!isAuthenticated ? (
 						<>
 							<Link href="/jobs">
 								<button className="underline-offset-[6px] decoration-blue-700 hover:underline hover:text-blue-800 transition-all">
