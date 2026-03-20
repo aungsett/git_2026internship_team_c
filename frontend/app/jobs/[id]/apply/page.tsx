@@ -4,8 +4,20 @@ import { CVUploadSection } from "@/features/applicant/components/cv-upload-secti
 import { ApplicantForm } from "@/features/applicant/components/applicant-form";
 import { Loader } from "@/features/applicant/components/loader";
 import { api } from "@/lib/api";
+import { usePathname } from "next/navigation";
 
 export default function Page() {
+	const pathname = usePathname();
+	const extractJobTitle = (pathname: string): string | null => {
+		const segments = pathname.split("/");
+		const slug = segments[2];
+		if (!slug) return null;
+		const titlePart = slug.split("-job-id-")[0];
+		return titlePart
+			.split("-")
+			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+			.join(" ");
+	};
 	const [parseAI, setParseAI] = useState(false);
 	const [formData, setFormData] = useState({
 		firstName: "",
@@ -139,13 +151,13 @@ export default function Page() {
 	}
 
 	return (
-		<div className="flex flex-col min-h-screen bg-slate-50">
+		<div className="flex flex-col min-h-screen bg-slate-50 py-8">
 			{parseAI && <Loader setParseAI={setParseAI} />}
 			<div className="flex-1 w-full px-4">
 				<div className="max-w-4xl mx-auto">
 					<div className="mb-8">
 						<h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
-							Apply for Senior Software Engineer
+							Apply for {extractJobTitle(pathname)}
 						</h1>
 						<p className="text-slate-600">
 							Please fill out the form below to submit your

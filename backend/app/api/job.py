@@ -23,10 +23,10 @@ def get_all_jobs():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
-@job_bp.route("/<int:id>", methods=["GET"])
-def get_single_job(id):
+@job_bp.route("/<string:job_id>", methods=["GET"])
+def get_single_job(job_id):
     try:
-        data = JobService.get_single_job(id)
+        data = JobService.get_single_job(job_id)
 
         return jsonify({"success": True, "data": data}), 200
 
