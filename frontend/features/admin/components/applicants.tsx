@@ -32,14 +32,6 @@ export default function ApplicationsPage() {
 		itemsPerPage,
 	} = useAdmin();
 
-	if (loading) {
-		return (
-			<main className="min-h-screen bg-gray-50 flex items-center justify-center">
-				<p className="text-gray-500">Loading applications...</p>
-			</main>
-		);
-	}
-
 	if (error) {
 		return (
 			<main className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -96,6 +88,12 @@ export default function ApplicationsPage() {
 						of {applications.length} applications
 					</span>
 				</div>
+
+				{loading && (
+					<div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+						Loading latest applications...
+					</div>
+				)}
 
 				{/* Table */}
 				<ApplicantsSheet

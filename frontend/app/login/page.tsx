@@ -26,6 +26,7 @@ export default function AdminLoginPage() {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/admin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ token: idToken }),
       });
 
@@ -34,13 +35,6 @@ export default function AdminLoginPage() {
       if (!response.ok || !data.success) {
         throw new Error(data.error || "Login failed");
       }
-
-      localStorage.setItem("admin", JSON.stringify({
-        admin_id: data.admin_id,
-        email: data.email,
-        role: data.role,
-        token: idToken,
-      }));
 
       router.push("/dashboard");
     } catch (err: any) {
