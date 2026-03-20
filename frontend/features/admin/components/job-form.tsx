@@ -1,30 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
-	X,
-	Briefcase,
-	MapPin,
-	Clock,
-	DollarSign,
-	Users,
-	FileText,
-	Zap,
-	Calendar,
-	CheckCircle,
-	Home,
+	X, Briefcase, MapPin, Clock, DollarSign, Users,
+	FileText, Zap, Calendar, CheckCircle, Home,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
+	Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
+import { api } from "@/lib/api";
 
 interface JobFormData {
 	jobTitle: string;
@@ -39,7 +28,9 @@ interface JobFormData {
 	applicationDeadline: string;
 	status: string;
 }
+
 export const JobForm = () => {
+	const router = useRouter();
 	const [formData, setFormData] = useState<JobFormData>({
 		jobTitle: "",
 		jobId: "",
@@ -53,31 +44,41 @@ export const JobForm = () => {
 		applicationDeadline: "",
 		status: "Draft",
 	});
-
 	const [skillInput, setSkillInput] = useState("");
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState("");
+	const [success, setSuccess] = useState(false);
 
-	const handleInputChange = (
-		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-	) => {
+	const getToken = () => {
+		const admin = JSON.parse(localStorage.getItem("admin") || "{}");
+		return admin.token || "";
+	};
+
+	const buildPayload = (status: string) => ({
+		job_id: formData.jobId,
+		title: formData.jobTitle,
+		description: formData.jobDescription,
+		location: formData.location,
+		employment_type: formData.employmentType,
+		department: formData.department,
+		salary_range: formData.salaryRange,
+		experience_required: formData.experience,
+		skills: formData.requiredSkills,
+		application_deadline: formData.applicationDeadline || null,
+		status,
+	});
+
+	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		const { name, value } = e.target;
-		setFormData((prev) => ({
-			...prev,
-			[name]: value,
-		}));
+		setFormData((prev) => ({ ...prev, [name]: value }));
 	};
 
 	const handleSelectChange = (value: string) => {
-		setFormData((prev) => ({
-			...prev,
-			status: value,
-		}));
+		setFormData((prev) => ({ ...prev, status: value }));
 	};
 
 	const handleAddSkill = () => {
-		if (
-			skillInput.trim() &&
-			!formData.requiredSkills.includes(skillInput.trim())
-		) {
+		if (skillInput.trim() && !formData.requiredSkills.includes(skillInput.trim())) {
 			setFormData((prev) => ({
 				...prev,
 				requiredSkills: [...prev.requiredSkills, skillInput.trim()],
@@ -100,195 +101,125 @@ export const JobForm = () => {
 		}
 	};
 
-	const handleSaveAsDraft = () => {
-		console.log("Saving as draft:", formData);
+	const handleSubmit = async (status: string) => {
+		setError("");
+		if (!formData.jobTitle) {
+			setError("Job title is required.");
+			return;
+		}
+		setLoading(true);
+		try {
+			const token = getToken();
+			await api.createJob(buildPayload(status), token);
+			setSuccess(true);
+			setTimeout(() => router.push("/dashboard"), 1500);
+		} catch (err: any) {
+			setError(err.message || "Something went wrong.");
+		} finally {
+			setLoading(false);
+		}
 	};
 
-	const handlePublish = () => {
-		console.log("Publishing job:", formData);
-	};
+	if (success) {
+		return (
+			<div className="flex flex-col items-center justify-center py-20">
+				<div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+					<CheckCircle className="w-8 h-8 text-green-600" />
+				</div>
+				<h2 className="text-2xl font-bold text-gray-900 mb-2">Job Created!</h2>
+				<p className="text-gray-600">Redirecting to dashboard...</p>
+			</div>
+		);
+	}
+
 	return (
 		<form className="flex flex-col gap-6">
-			{/* Basic Information Section */}
+			{/* Basic Information */}
 			<Card className="p-6 border border-gray-200">
 				<div className="flex items-center gap-3 mb-6">
 					<Briefcase className="w-5 h-5 text-blue-600" />
-					<h2 className="text-lg font-semibold text-gray-900">
-						Basic Information
-					</h2>
+					<h2 className="text-lg font-semibold text-gray-900">Basic Information</h2>
 				</div>
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 					<div>
 						<label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-							<Briefcase className="w-4 h-4 text-gray-500" />
-							Job Title
+							<Briefcase className="w-4 h-4 text-gray-500" /> Job Title
 						</label>
-						<Input
-							type="text"
-							name="jobTitle"
-							value={formData.jobTitle}
-							onChange={handleInputChange}
-							placeholder="e.g. Senior Product Designer"
-							className="w-full"
-						/>
+						<Input type="text" name="jobTitle" value={formData.jobTitle} onChange={handleInputChange} placeholder="e.g. Senior Product Designer" />
 					</div>
 					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-2">
-							Job ID
-						</label>
-						<Input
-							type="text"
-							name="jobId"
-							value={formData.jobId}
-							onChange={handleInputChange}
-							placeholder="e.g. DES-2024-001"
-							className="w-full"
-						/>
+						<label className="block text-sm font-medium text-gray-700 mb-2">Job ID</label>
+						<Input type="text" name="jobId" value={formData.jobId} onChange={handleInputChange} placeholder="e.g. DES-2024-001" />
 					</div>
 					<div>
 						<label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-							<MapPin className="w-4 h-4 text-gray-500" />
-							Location
+							<MapPin className="w-4 h-4 text-gray-500" /> Location
 						</label>
-						<Input
-							type="text"
-							name="location"
-							value={formData.location}
-							onChange={handleInputChange}
-							placeholder="e.g. Remote, San Francisco"
-							className="w-full"
-						/>
+						<Input type="text" name="location" value={formData.location} onChange={handleInputChange} placeholder="e.g. Remote, San Francisco" />
 					</div>
 				</div>
 			</Card>
 
-			{/* Detailed Info Section */}
+			{/* Detailed Info */}
 			<Card className="p-6 border border-gray-200">
 				<div className="flex items-center gap-3 mb-6">
 					<Clock className="w-5 h-5 text-blue-600" />
-					<h2 className="text-lg font-semibold text-gray-900">
-						Detailed Info
-					</h2>
+					<h2 className="text-lg font-semibold text-gray-900">Detailed Info</h2>
 				</div>
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 					<div>
 						<label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-							<Clock className="w-4 h-4 text-gray-500" />
-							Employment Type
+							<Clock className="w-4 h-4 text-gray-500" /> Employment Type
 						</label>
-						<Input
-							type="text"
-							name="employmentType"
-							value={formData.employmentType}
-							onChange={handleInputChange}
-							placeholder="e.g. Full-time"
-							className="w-full"
-						/>
+						<Input type="text" name="employmentType" value={formData.employmentType} onChange={handleInputChange} placeholder="e.g. Full-time" />
 					</div>
 					<div>
 						<label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-							<Users className="w-4 h-4 text-gray-500" />
-							Department
+							<Users className="w-4 h-4 text-gray-500" /> Department
 						</label>
-						<Input
-							type="text"
-							name="department"
-							value={formData.department}
-							onChange={handleInputChange}
-							placeholder="e.g. Product Design"
-							className="w-full"
-						/>
+						<Input type="text" name="department" value={formData.department} onChange={handleInputChange} placeholder="e.g. Product Design" />
 					</div>
 					<div>
 						<label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-							<DollarSign className="w-4 h-4 text-gray-500" />
-							Salary Range
+							<DollarSign className="w-4 h-4 text-gray-500" /> Salary Range
 						</label>
-						<Input
-							type="text"
-							name="salaryRange"
-							value={formData.salaryRange}
-							onChange={handleInputChange}
-							placeholder="e.g. $120k - $160k"
-							className="w-full"
-						/>
+						<Input type="text" name="salaryRange" value={formData.salaryRange} onChange={handleInputChange} placeholder="e.g. $120k - $160k" />
 					</div>
 					<div>
 						<label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-							<Zap className="w-4 h-4 text-gray-500" />
-							Experience (Years)
+							<Zap className="w-4 h-4 text-gray-500" /> Experience (Years)
 						</label>
-						<Input
-							type="text"
-							name="experience"
-							value={formData.experience}
-							onChange={handleInputChange}
-							placeholder="e.g. 5"
-							className="w-full"
-						/>
+						<Input type="text" name="experience" value={formData.experience} onChange={handleInputChange} placeholder="e.g. 5" />
 					</div>
 				</div>
 			</Card>
 
-			{/* Content Section */}
+			{/* Content */}
 			<Card className="p-6 border border-gray-200">
 				<div className="flex items-center gap-3 mb-6">
 					<FileText className="w-5 h-5 text-blue-600" />
-					<h2 className="text-lg font-semibold text-gray-900">
-						Content
-					</h2>
+					<h2 className="text-lg font-semibold text-gray-900">Content</h2>
 				</div>
 				<div className="space-y-6">
 					<div>
 						<label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-							<FileText className="w-4 h-4 text-gray-500" />
-							Job Description
+							<FileText className="w-4 h-4 text-gray-500" /> Job Description
 						</label>
-						<Textarea
-							name="jobDescription"
-							value={formData.jobDescription}
-							onChange={handleInputChange}
-							placeholder="Provide a detailed description of the role, responsibilities, and expectations..."
-							rows={6}
-							className="w-full resize-none"
-						/>
+						<Textarea name="jobDescription" value={formData.jobDescription} onChange={handleInputChange} placeholder="Provide a detailed description..." rows={6} className="w-full resize-none" />
 					</div>
-
 					<div>
 						<label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-							<Zap className="w-4 h-4 text-gray-500" />
-							Required Skills
+							<Zap className="w-4 h-4 text-gray-500" /> Required Skills
 						</label>
 						<div className="flex gap-2 mb-4">
-							<Input
-								type="text"
-								value={skillInput}
-								onChange={(e) => setSkillInput(e.target.value)}
-								onKeyPress={handleKeyPress}
-								placeholder="Add a skill..."
-								className="flex-1"
-							/>
-							<Button
-								type="button"
-								onClick={handleAddSkill}
-								variant="outline"
-								className="px-4"
-							>
-								Add
-							</Button>
+							<Input type="text" value={skillInput} onChange={(e) => setSkillInput(e.target.value)} onKeyPress={handleKeyPress} placeholder="Add a skill..." className="flex-1" />
+							<Button type="button" onClick={handleAddSkill} variant="outline" className="px-4">Add</Button>
 						</div>
 						<div className="flex flex-wrap gap-2">
 							{formData.requiredSkills.map((skill) => (
-								<div
-									key={skill}
-									className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium"
-								>
+								<div key={skill} className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
 									{skill}
-									<button
-										type="button"
-										onClick={() => handleRemoveSkill(skill)}
-										className="ml-1 hover:text-blue-900 transition-colors"
-									>
+									<button type="button" onClick={() => handleRemoveSkill(skill)} className="ml-1 hover:text-blue-900 transition-colors">
 										<X className="w-4 h-4" />
 									</button>
 								</div>
@@ -298,45 +229,28 @@ export const JobForm = () => {
 				</div>
 			</Card>
 
-			{/* Metadata Section */}
+			{/* Metadata */}
 			<Card className="p-6 border border-gray-200">
 				<div className="flex items-center gap-3 mb-6">
 					<Calendar className="w-5 h-5 text-blue-600" />
-					<h2 className="text-lg font-semibold text-gray-900">
-						Metadata
-					</h2>
+					<h2 className="text-lg font-semibold text-gray-900">Metadata</h2>
 				</div>
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 					<div>
 						<label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-							<Calendar className="w-4 h-4 text-gray-500" />
-							Application Deadline
+							<Calendar className="w-4 h-4 text-gray-500" /> Application Deadline
 						</label>
-						<Input
-							type="date"
-							name="applicationDeadline"
-							value={formData.applicationDeadline}
-							onChange={handleInputChange}
-							className="w-full"
-						/>
+						<Input type="date" name="applicationDeadline" value={formData.applicationDeadline} onChange={handleInputChange} />
 					</div>
 					<div>
 						<label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-							<CheckCircle className="w-4 h-4 text-gray-500" />
-							Status
+							<CheckCircle className="w-4 h-4 text-gray-500" /> Status
 						</label>
-						<Select
-							value={formData.status}
-							onValueChange={handleSelectChange}
-						>
-							<SelectTrigger>
-								<SelectValue />
-							</SelectTrigger>
+						<Select value={formData.status} onValueChange={handleSelectChange}>
+							<SelectTrigger><SelectValue /></SelectTrigger>
 							<SelectContent>
 								<SelectItem value="Draft">Draft</SelectItem>
-								<SelectItem value="Published">
-									Published
-								</SelectItem>
+								<SelectItem value="Published">Published</SelectItem>
 								<SelectItem value="Closed">Closed</SelectItem>
 							</SelectContent>
 						</Select>
@@ -344,24 +258,21 @@ export const JobForm = () => {
 				</div>
 			</Card>
 
+			{error && (
+				<div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+					<p className="text-sm text-red-700">{error}</p>
+				</div>
+			)}
+
 			{/* Action Buttons */}
 			<div className="flex gap-4 justify-end">
-				<Button
-					type="button"
-					onClick={handleSaveAsDraft}
-					variant="outline"
-					className="px-8 flex items-center gap-2"
-				>
+				<Button type="button" onClick={() => handleSubmit("Draft")} disabled={loading} variant="outline" className="px-8 flex items-center gap-2">
 					<Home className="w-4 h-4" />
-					Save as Draft
+					{loading ? "Saving..." : "Save as Draft"}
 				</Button>
-				<Button
-					type="button"
-					onClick={handlePublish}
-					className="px-8 bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
-				>
+				<Button type="button" onClick={() => handleSubmit("Published")} disabled={loading} className="px-8 bg-blue-600 hover:bg-blue-700 flex items-center gap-2">
 					<CheckCircle className="w-4 h-4" />
-					Publish Job
+					{loading ? "Publishing..." : "Publish Job"}
 				</Button>
 			</div>
 		</form>
