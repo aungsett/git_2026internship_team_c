@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { filterJobs, FilterOptions } from "@/lib/filter-jobs";
 import { api } from "@/lib/api";
 export interface Job {
@@ -28,6 +28,14 @@ export const useJobs = () => {
 		salaryRange: [20, 200],
 		minExperience: 0,
 	});
+
+	const departments = useMemo(() => {
+		return Array.from(new Set(jobs.map((job) => job.department).filter(Boolean))).sort();
+	}, [jobs]);
+
+	const employmentTypes = useMemo(() => {
+		return Array.from(new Set(jobs.map((job) => job.employment_type).filter(Boolean))).sort();
+	}, [jobs]);
 
 	const handleSearchChange = (query: string) => {
 		setSearchQuery(query);
@@ -63,6 +71,8 @@ export const useJobs = () => {
 		handleSearchChange,
 		filters,
 		jobs,
+		departments,
+		employmentTypes,
 		handleFiltersChange,
 		ITEMS_PER_PAGE,
 		filterJobs,

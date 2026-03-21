@@ -16,8 +16,10 @@ export default function Page() {
 		currentPage,
 		filterJobs,
 		jobs,
+		departments,
+		employmentTypes,
 		setCurrentPage,
-		ITEMS_PER_PAGE,
+		ITEMS_PER_PAGE
 	} = useJobs();
 	const filteredJobs = useMemo(() => {
 		return filterJobs(jobs, filters);
@@ -61,6 +63,8 @@ export default function Page() {
 							<JobFilters
 								filters={filters}
 								onFiltersChange={handleFiltersChange}
+								departments={departments}
+								employmentTypes={employmentTypes}
 							/>
 						</div>
 

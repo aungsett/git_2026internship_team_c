@@ -6,14 +6,13 @@ import { Input } from "@/components/ui/input";
 import { FilterOptions } from "@/lib/filter-jobs";
 
 interface JobFiltersProps {
-	filters: FilterOptions;
-	onFiltersChange: (filters: FilterOptions) => void;
+    filters: FilterOptions;
+    onFiltersChange: (filters: FilterOptions) => void;
+    departments: string[];
+	employmentTypes: string[];
 }
 
-const DEPARTMENTS = ["Engineering", "Design", "Marketing", "Sales", "HR"];
-const EMPLOYMENT_TYPES = ["Full-time", "Part-time"];
-
-export const JobFilters = ({ filters, onFiltersChange }: JobFiltersProps) => {
+export const JobFilters = ({ filters, onFiltersChange, departments, employmentTypes }: JobFiltersProps) => {
 	const handleDepartmentChange = (department: string, checked: boolean) => {
 		const newDepartments = checked
 			? [...filters.departments, department]
@@ -40,7 +39,7 @@ export const JobFilters = ({ filters, onFiltersChange }: JobFiltersProps) => {
 			<div>
 				<h3 className="font-medium mb-3 text-sm">Department</h3>
 				<div className="space-y-2">
-					{DEPARTMENTS.map((dept) => (
+					{departments.map((dept) => (
 						<div key={dept} className="flex items-center space-x-2">
 							<Checkbox
 								id={`dept-${dept}`}
@@ -66,7 +65,7 @@ export const JobFilters = ({ filters, onFiltersChange }: JobFiltersProps) => {
 			<div>
 				<h3 className="font-medium mb-3 text-sm">Employment Type</h3>
 				<div className="space-y-2">
-					{EMPLOYMENT_TYPES.map((type) => (
+					{employmentTypes.map((type) => (
 						<div key={type} className="flex items-center space-x-2">
 							<Checkbox
 								id={`type-${type}`}
