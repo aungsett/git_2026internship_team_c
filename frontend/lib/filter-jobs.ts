@@ -34,8 +34,8 @@ export const filterJobs = (jobs: Job[], filters: FilterOptions): Job[] => {
 		}
 
 		// Experience filter
-		if (job.experience_required < filters.minExperience) {
-			return false;
+		if (filters.minExperience > 0 && (job.experience_required === null || job.experience_required < filters.minExperience)) {
+		    return false;
 		}
 
 		return true;
