@@ -42,6 +42,69 @@ export default function Page() {
 	const [success, setSuccess] = useState(false);
 	const [error, setError] = useState("");
 
+	const handleTextExtracted = async (text: string) => {
+		if (!text.trim()) return;
+
+		setParseAI(true);
+		try {
+			const result = await api.parseCV(text);
+			const parsed = result?.data as
+				| {
+						first_name?: string | null;
+						last_name?: string | null;
+						email?: string | null;
+						phone_number?: string | null;
+						address?: string | null;
+						date_of_birth?: string | null;
+						qualification?: string | null;
+						college?: string | null;
+						work_experience?: number | null;
+						skills?: string[] | null;
+						language?: string[] | null;
+						professional_summary?: string | null;
+				  }
+				| undefined;
+
+			if (!parsed) return;
+
+			setFormData((prev) => ({
+				...prev,
+				firstName: parsed.first_name ?? prev.firstName,
+				lastName: parsed.last_name ?? prev.lastName,
+				email: parsed.email ?? prev.email,
+				phone: parsed.phone_number ?? prev.phone,
+				currentAddress: parsed.address ?? prev.currentAddress,
+				dateOfBirth: parsed.date_of_birth ?? prev.dateOfBirth,
+				highestQualification:
+					parsed.qualification ?? prev.highestQualification,
+				college: parsed.college ?? prev.college,
+				yearsOfExperience:
+					parsed.work_experience != null
+						? String(parsed.work_experience)
+						: prev.yearsOfExperience,
+				coreSkills:
+					Array.isArray(parsed.skills) && parsed.skills.length > 0
+						? parsed.skills.join(", ")
+						: prev.coreSkills,
+				languagesKnown:
+					Array.isArray(parsed.language) && parsed.language.length > 0
+						? parsed.language.join(", ")
+						: prev.languagesKnown,
+				additionalNotes:
+					!prev.additionalNotes && parsed.professional_summary
+						? parsed.professional_summary
+						: prev.additionalNotes,
+			}));
+		} catch (err: any) {
+			setError(
+				err?.message ||
+					"Failed to parse your CV. You can still fill the form manually.",
+			);
+		} finally {
+			setParseAI(false);
+		}
+	};
+
 	const handleInputChange = (
 		e: React.ChangeEvent<
 			HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -165,7 +228,10 @@ export default function Page() {
 						</p>
 					</div>
 					<form onSubmit={handleSubmit} className="space-y-6">
-						<CVUploadSection onFileSelect={setCvFile} />
+						<CVUploadSection
+							onFileSelect={setCvFile}
+							onTextExtracted={handleTextExtracted}
+						/>
 						<ApplicantForm
 							formData={formData}
 							handleInputChange={handleInputChange}

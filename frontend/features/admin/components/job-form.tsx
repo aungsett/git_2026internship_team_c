@@ -62,7 +62,10 @@ export const JobForm = () => {
 		employment_type: formData.employmentType,
 		department: formData.department,
 		salary_range: formData.salaryRange,
-		experience_required: formData.experience,
+		experience_required:
+			formData.experience.trim() === ""
+				? null
+				: Number.parseInt(formData.experience, 10),
 		skills: formData.requiredSkills,
 		application_deadline: formData.applicationDeadline || null,
 		status,
@@ -107,13 +110,27 @@ export const JobForm = () => {
 	        setError("Job title is required.");
 	        return;
 	    }
+		if (
+			formData.experience.trim() !== "" &&
+			!/^[0-9]+$/.test(formData.experience.trim())
+		) {
+			setError(
+				"Experience must be a whole number of years (example: 0, 1, 5).",
+			);
+			return;
+		}
 	    setLoading(true);
 	    try {
 	        await api.createJob(buildPayload(status));
 	        setSuccess(true);
 	        setTimeout(() => router.push("/dashboard"), 1500);
 	    } catch (err: any) {
-	        setError(err.message || "Something went wrong.");
+			const rawMessage = String(err?.message || "");
+			if (/jobs_job_id_key|duplicate key value|UniqueViolation/i.test(rawMessage)) {
+				setError("Job ID already exists. Please use a different Job ID.");
+			} else {
+				setError(rawMessage || "Something went wrong.");
+			}
 	    } finally {
 	        setLoading(false);
 	    }
@@ -188,7 +205,16 @@ export const JobForm = () => {
 						<label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
 							<Zap className="w-4 h-4 text-gray-500" /> Experience (Years)
 						</label>
-						<Input type="text" name="experience" value={formData.experience} onChange={handleInputChange} placeholder="e.g. 5" />
+						<Input
+							type="number"
+							inputMode="numeric"
+							min={0}
+							step={1}
+							name="experience"
+							value={formData.experience}
+							onChange={handleInputChange}
+							placeholder="e.g. 0"
+						/>
 					</div>
 				</div>
 			</Card>

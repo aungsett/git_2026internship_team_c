@@ -1,6 +1,7 @@
 from app.models.job import Job
 from app.extensions import db
 from datetime import datetime
+from sqlalchemy.exc import IntegrityError
 
 
 class JobService:
@@ -74,6 +75,16 @@ class JobService:
                 "%Y-%m-%d"
             ).date()
 
+        experience_required = data.get("experience_required")
+        if experience_required in ("", None):
+            experience_required = None
+        elif isinstance(experience_required, str):
+            if not experience_required.strip().isdigit():
+                raise ValueError(
+                    "Experience must be a whole number of years (example: 0, 1, 5)."
+                )
+            experience_required = int(experience_required.strip())
+
         new_job = Job(
             job_id=data.get("job_id"),
             title=data.get("title"),
@@ -82,7 +93,7 @@ class JobService:
             employment_type=data.get("employment_type"),
             department=data.get("department"),
             salary_range=data.get("salary_range"),
-            experience_required=data.get("experience_required"),
+            experience_required=experience_required,
             skills=data.get("skills", []),
             application_deadline=deadline,
             status=data.get("status", "Open"),
@@ -90,6 +101,12 @@ class JobService:
         )
 
         db.session.add(new_job)
-        db.session.commit()
+
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            # Most common: duplicate business job_id (unique constraint).
+            raise ValueError("Job ID already exists. Please use a different Job ID.")
 
         return True
