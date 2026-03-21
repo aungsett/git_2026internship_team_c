@@ -1,3 +1,5 @@
+import { getCsrfToken } from "./security";
+
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export const api = {
@@ -19,17 +21,20 @@ export const api = {
 
   // Jobs (Admin)
   createJob: async (payload: object) => {
-      const response = await fetch(`${BASE_URL}/admin/jobs`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(payload),
-      });
-      const data = await response.json();
-      if (!data.success) throw new Error(data.error);
-      return data;
+    const csrfToken = getCsrfToken();
+
+    const response = await fetch(`${BASE_URL}/admin/jobs`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(csrfToken ? { "X-CSRF-Token": csrfToken } : {}),
+      },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    });
+    const data = await response.json();
+    if (!data.success) throw new Error(data.error);
+    return data;
   },
 
   // Applicant
@@ -45,13 +50,13 @@ export const api = {
 
   // CV Parsing
   parseCV: async (resumeText: string) => {
-      const response = await fetch(`/api/parse-cv`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ resume_text: resumeText }),
-      });
-      const data = await response.json();
-      if (!data.success) throw new Error(data.error);
-      return data;
+    const response = await fetch(`/api/parse-cv`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ resume_text: resumeText }),
+    });
+    const data = await response.json();
+    if (!data.success) throw new Error(data.error);
+    return data;
   },
 };

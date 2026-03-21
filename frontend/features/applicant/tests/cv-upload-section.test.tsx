@@ -5,7 +5,9 @@ import { CVUploadSection } from "../components/cv-upload-section";
 
 describe("CVUploadSection", () => {
 	it("renders upload section correctly", () => {
-		render(<CVUploadSection onFileSelect={vi.fn()} />);
+		render(
+			<CVUploadSection onFileSelect={vi.fn()} onTextExtracted={vi.fn()} />,
+		);
 
 		expect(screen.getByText("Upload Your CV")).toBeInTheDocument();
 		expect(
@@ -22,7 +24,12 @@ describe("CVUploadSection", () => {
 	it("accepts valid PDF file and displays file info", async () => {
 		const mockOnFileSelect = vi.fn();
 
-		render(<CVUploadSection onFileSelect={mockOnFileSelect} />);
+		render(
+			<CVUploadSection
+				onFileSelect={mockOnFileSelect}
+				onTextExtracted={vi.fn()}
+			/>,
+		);
 
 		const file = new File(["dummy content"], "resume.pdf", {
 			type: "application/pdf",
@@ -40,7 +47,9 @@ describe("CVUploadSection", () => {
 	});
 
 	it("shows error for invalid file type", async () => {
-		render(<CVUploadSection onFileSelect={vi.fn()} />);
+		render(
+			<CVUploadSection onFileSelect={vi.fn()} onTextExtracted={vi.fn()} />,
+		);
 
 		const file = new File(["dummy"], "image.png", {
 			type: "image/png",
@@ -58,7 +67,9 @@ describe("CVUploadSection", () => {
 	});
 
 	it("shows error when file size exceeds 5MB limit", async () => {
-		render(<CVUploadSection onFileSelect={vi.fn()} />);
+		render(
+			<CVUploadSection onFileSelect={vi.fn()} onTextExtracted={vi.fn()} />,
+		);
 		const largeFile = new File(
 			[new ArrayBuffer(5 * 1024 * 1024 + 1)], // 5MB + 1 byte
 			"large.pdf",
@@ -79,7 +90,12 @@ describe("CVUploadSection", () => {
 	it("removes file when remove button clicked", async () => {
 		const mockOnFileSelect = vi.fn();
 
-		render(<CVUploadSection onFileSelect={mockOnFileSelect} />);
+		render(
+			<CVUploadSection
+				onFileSelect={mockOnFileSelect}
+				onTextExtracted={vi.fn()}
+			/>,
+		);
 
 		const file = new File(["dummy"], "resume.pdf", {
 			type: "application/pdf",
@@ -105,7 +121,12 @@ describe("CVUploadSection", () => {
 	it("handles drag and drop upload", () => {
 		const mockOnFileSelect = vi.fn();
 
-		render(<CVUploadSection onFileSelect={mockOnFileSelect} />);
+		render(
+			<CVUploadSection
+				onFileSelect={mockOnFileSelect}
+				onTextExtracted={vi.fn()}
+			/>,
+		);
 
 		const file = new File(["dummy"], "resume.pdf", {
 			type: "application/pdf",
@@ -129,7 +150,9 @@ describe("CVUploadSection", () => {
 	// ===============================
 
 	it("displays formatted file size", async () => {
-		render(<CVUploadSection onFileSelect={vi.fn()} />);
+		render(
+			<CVUploadSection onFileSelect={vi.fn()} onTextExtracted={vi.fn()} />,
+		);
 
 		const file = new File([new ArrayBuffer(1024 * 1024)], "resume.pdf", {
 			type: "application/pdf",

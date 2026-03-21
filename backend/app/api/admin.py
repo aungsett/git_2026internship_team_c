@@ -103,8 +103,8 @@ def create_job():
             "error": str(e)
         }), 400
 
-    except Exception as e:
+    except Exception:
         return jsonify({
             "success": False,
-            "error": str(e)
+            "error": "Failed to create job"
         }), 500

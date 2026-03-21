@@ -1,20 +1,36 @@
+"use client";
+
 import Link from "next/link";
 import { auth } from "@/lib/firebase";
 import { Button } from "../ui/button";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
 import { getCsrfToken } from "@/lib/security";
 import { useEffect, useState } from "react";
 
+type AuthStatus = "unknown" | "authenticated" | "unauthenticated";
+
 export const Header = () => {
 	const router = useRouter();
-	const [isAuthenticated, setIsAuthenticated] = useState(false);
+	const pathname = usePathname();
+	const assumeAuthenticated = pathname.startsWith("/dashboard");
+	const [authStatus, setAuthStatus] = useState<AuthStatus>(
+		assumeAuthenticated ? "authenticated" : "unknown",
+	);
 	const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
 
 	useEffect(() => {
+		let isCancelled = false;
+
 		const checkSession = async () => {
 			if (!backendUrl) {
-				setIsAuthenticated(false);
+				if (!isCancelled) {
+					setAuthStatus(
+						assumeAuthenticated
+							? "authenticated"
+							: "unauthenticated",
+					);
+				}
 				return;
 			}
 
@@ -23,14 +39,25 @@ export const Header = () => {
 					method: "GET",
 					credentials: "include",
 				});
-				setIsAuthenticated(response.ok);
+				if (!isCancelled) {
+					setAuthStatus(response.ok ? "authenticated" : "unauthenticated");
+				}
 			} catch {
-				setIsAuthenticated(false);
+				if (!isCancelled) {
+					setAuthStatus(
+						assumeAuthenticated
+							? "authenticated"
+							: "unauthenticated",
+					);
+				}
 			}
 		};
 
 		checkSession();
-	}, [backendUrl]);
+		return () => {
+			isCancelled = true;
+		};
+	}, [backendUrl, assumeAuthenticated]);
 
 	const handleLogout = async () => {
 		const csrfToken = getCsrfToken();
@@ -56,10 +83,12 @@ export const Header = () => {
 			} catch {
 				// Ignore Firebase sign-out issues and continue navigation.
 			}
-			setIsAuthenticated(false);
+			setAuthStatus("unauthenticated");
 			router.push("/");
 		}
 	};
+
+	const isAuthenticated = authStatus === "authenticated";
 
 	return (
 		<header className="fixed top-0 left-0 w-full bg-white border-b border-slate-200 flex items-center justify-between px-4 py-2 z-[1000]">
@@ -108,7 +137,7 @@ export const Header = () => {
 				</div>
 			</div>
 			<div className="flex gap-4">
-				{!isAuthenticated ? (
+				{authStatus === "unknown" ? null : !isAuthenticated ? (
 					<>
 						<Link href="/login">
 							<Button className="bg-blue-600 text-white hover:text-white hover:bg-blue-700">

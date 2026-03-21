@@ -11,7 +11,7 @@ export interface Application {
 }
 
 export type SortOrder = "newest" | "oldest";
-export type StatusType = "Pending" | "Shortlisted" | "Rejected";
+export type StatusType = "Pending" | "Shortlisted" | "Rejected" | "Interviewed";
 
 export interface Applicant {
 	applicant_id: number;
