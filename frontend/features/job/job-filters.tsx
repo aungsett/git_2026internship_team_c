@@ -9,11 +9,10 @@ interface JobFiltersProps {
     filters: FilterOptions;
     onFiltersChange: (filters: FilterOptions) => void;
     departments: string[];
+	employmentTypes: string[];
 }
 
-const EMPLOYMENT_TYPES = ["Full-time", "Part-time"];
-
-export const JobFilters = ({ filters, onFiltersChange, departments }: JobFiltersProps) => {
+export const JobFilters = ({ filters, onFiltersChange, departments, employmentTypes }: JobFiltersProps) => {
 	const handleDepartmentChange = (department: string, checked: boolean) => {
 		const newDepartments = checked
 			? [...filters.departments, department]
@@ -66,7 +65,7 @@ export const JobFilters = ({ filters, onFiltersChange, departments }: JobFilters
 			<div>
 				<h3 className="font-medium mb-3 text-sm">Employment Type</h3>
 				<div className="space-y-2">
-					{EMPLOYMENT_TYPES.map((type) => (
+					{employmentTypes.map((type) => (
 						<div key={type} className="flex items-center space-x-2">
 							<Checkbox
 								id={`type-${type}`}

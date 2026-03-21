@@ -33,6 +33,10 @@ export const useJobs = () => {
 		return Array.from(new Set(jobs.map((job) => job.department).filter(Boolean))).sort();
 	}, [jobs]);
 
+	const employmentTypes = useMemo(() => {
+		return Array.from(new Set(jobs.map((job) => job.employment_type).filter(Boolean))).sort();
+	}, [jobs]);
+
 	const handleSearchChange = (query: string) => {
 		setSearchQuery(query);
 		setFilters((prev) => ({ ...prev, searchQuery: query }));
@@ -68,6 +72,7 @@ export const useJobs = () => {
 		filters,
 		jobs,
 		departments,
+		employmentTypes,
 		handleFiltersChange,
 		ITEMS_PER_PAGE,
 		filterJobs,

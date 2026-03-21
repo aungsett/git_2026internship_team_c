@@ -17,6 +17,7 @@ export default function Page() {
 		filterJobs,
 		jobs,
 		departments,
+		employmentTypes,
 		setCurrentPage,
 		ITEMS_PER_PAGE
 	} = useJobs();
@@ -63,6 +64,7 @@ export default function Page() {
 								filters={filters}
 								onFiltersChange={handleFiltersChange}
 								departments={departments}
+								employmentTypes={employmentTypes}
 							/>
 						</div>
 
