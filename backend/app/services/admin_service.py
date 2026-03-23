@@ -1,6 +1,7 @@
 from app.models.admin import Admin
 from app.models.applicant import Applicant
 from app.models.review import ApplicationReview
+from app.models.job import Job
 from app.extensions import db
 from app.services.email_service import EmailService
 import csv
@@ -15,7 +16,7 @@ class AdminService:
             ApplicationReview.created_at.desc()
         ).paginate(page=page, per_page=per_page, error_out=False)
 
-        applicants = pagination.items
+        applications = pagination.items
         output = []
 
         for app in applications:
@@ -25,7 +26,7 @@ class AdminService:
                 "full_name": f"{app.applicant.first_name} {app.applicant.last_name}",
                 "email": app.applicant.email,
                 "job_id": app.job_id,
-                "job_title": app.job.title,   # ⭐ IMPORTANT
+                "job_title": app.job.title,   
                 "status": app.status,
                 "comments": app.comments,
                 "applied_at": app.reviewed_at.isoformat()
@@ -150,7 +151,7 @@ class AdminService:
         if data.get("salary"):
             job.salary = data.get("salary")
 
-        # ✅ Handle draft/published
+        #Handle draft/published
         if data.get("status"):
             if data.get("status") not in ["draft", "published"]:
                 raise ValueError("Invalid status")
