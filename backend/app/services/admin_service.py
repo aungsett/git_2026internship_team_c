@@ -2,8 +2,10 @@ from app.models.admin import Admin
 from app.models.applicant import Applicant
 from app.models.review import ApplicationReview
 from app.extensions import db
+from app.services.email_service import EmailService
 import csv
 import io
+
 
 class AdminService:
 
@@ -36,18 +38,18 @@ class AdminService:
             "total": pagination.total,
             "pages": pagination.pages
         }
-    
+
     @staticmethod
     def get_single_application(applicant_id):
         app = Applicant.query.get(applicant_id)
-            
+
         if not app:
             raise ValueError("Application not found")
-            
+
         doc_url = app.document.document_url if app.document else None
-            
+
         review_data = {}
-            
+
         if app.reviews:
             latest_review = app.reviews[0]
             review_data = {
@@ -55,28 +57,31 @@ class AdminService:
                 "comments": latest_review.comments,
                 "reviewed_at": latest_review.reviewed_at.isoformat()
             }
-                
+
         data = app.to_dict()
         data["document_url"] = doc_url
         data["review"] = review_data
-            
+
         return data
-        
 
     @staticmethod
     def review_application(applicant_id, status, comments, admin_id):
-    
+
         if not status or not admin_id:
             raise ValueError("Status and Admin ID required")
-    
+
         admin = Admin.query.get(admin_id)
         if not admin:
             raise ValueError("Admin not found")
-    
+
+        applicant = Applicant.query.get(applicant_id)
+        if not applicant:
+            raise ValueError("Applicant not found")
+
         review = ApplicationReview.query.filter_by(
             applicant_id=applicant_id
         ).first()
-    
+
         if review:
             review.status = status
             review.comments = comments
@@ -88,10 +93,18 @@ class AdminService:
                 comments=comments
             )
             db.session.add(review)
-    
+
         db.session.commit()
+
+        # Send email when status is updated
+        EmailService.send_status_update_email(
+            applicant.email,
+            applicant.first_name,
+            status
+        )
+
         return True
-        
+
     @staticmethod
     def export_applicants_csv():
         applicants = Applicant.query.all()
@@ -116,4 +129,3 @@ class AdminService:
             ])
 
         return output.getvalue()
-    
