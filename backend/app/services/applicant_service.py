@@ -2,6 +2,8 @@ from datetime import datetime
 from app.extensions import db
 from app.models.applicant import Applicant
 from app.models.document import Document
+from app.models.review import ApplicationReview
+from app.models.job import Job
 from app.utils.cloudinary import upload_cv
 from app.utils.validators import validate_email, validate_file_type, validate_file_size
 
@@ -10,7 +12,7 @@ class ApplicantService:
 
     @staticmethod
     def submit_application(data, file):
-        required_fields = ["first_name", "last_name", "email"]
+        required_fields = ["first_name", "last_name", "email", "job_id"]
         for field in required_fields:
             if not data.get(field):
                 raise ValueError(f"{field} is required")
@@ -44,7 +46,16 @@ class ApplicantService:
 
             if age < 18:
                 raise ValueError("Applicant must be at least 18 years old")
+        
+        job_id = data.get("job_id")
+        job = Job.query.get(job_id)
 
+        if not job:
+            raise ValueError("Invalid job_id")
+
+        if job.status != "published":
+            raise ValueError("Job is not open for applications")
+        
         applicant = Applicant(
             first_name=data.get("first_name").strip(),
             last_name=data.get("last_name").strip(),
@@ -66,6 +77,22 @@ class ApplicantService:
 
         db.session.add(applicant)
         db.session.flush()
+
+        existing = ApplicationReview.query.filter_by(
+            applicant_id=applicant.applicant_id,
+            job_id=job_id
+        ).first()
+
+        if existing:
+            raise ValueError("You have already applied to this job")
+
+        application = ApplicationReview(
+            applicant_id=applicant.applicant_id,
+            job_id=job_id,
+            status="Pending"
+        )
+
+        db.session.add(application)
 
         cloud_url = upload_cv(file, applicant.applicant_id)
 

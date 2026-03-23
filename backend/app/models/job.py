@@ -29,8 +29,8 @@ class Job(db.Model):
 
 
     # Job Status
-    status = db.Column(db.String(20), default="Open")  
-    # Open / Closed / Draft
+    status = db.Column(db.String(20), default="draft")  
+    # Draft/ Published
 
     # Timestamps
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -39,6 +39,9 @@ class Job(db.Model):
         default=datetime.utcnow,
         onupdate=datetime.utcnow
     )
+
+    #Relationship
+    applications = db.relationship('ApplicationReview', backref='job', lazy=True)
 
     def __repr__(self):
         return f"<Job {self.title}>"

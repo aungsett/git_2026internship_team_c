@@ -45,6 +45,7 @@ def review_application(id):
 
         AdminService.review_application(
             applicant_id=id,
+            job_id=data.get("job_id"),
             status=data.get("status"),
             comments=data.get("comments"),
             admin_id=data.get("admin_id")
@@ -108,3 +109,25 @@ def create_job():
             "success": False,
             "error": "Failed to create job"
         }), 500
+    
+    
+@admin_bp.route("/jobs/<int:job_id>", methods=["PUT"])
+@admin_required
+def update_job(job_id):
+    try:
+        data = request.json
+
+        job = AdminService.update_job(job_id, data)
+
+        return jsonify({
+            "success": True,
+            "message": "Job updated successfully",
+            "job_id": job.job_id,
+            "status": job.status
+        }), 200
+
+    except ValueError as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500

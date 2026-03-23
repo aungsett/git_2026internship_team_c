@@ -11,26 +11,24 @@ class AdminService:
 
     @staticmethod
     def get_all_applications(page=1, per_page=10):
-        pagination = Applicant.query.order_by(
-            Applicant.created_at.desc()
+        pagination = ApplicationReview.query.order_by(
+            ApplicationReview.created_at.desc()
         ).paginate(page=page, per_page=per_page, error_out=False)
 
         applicants = pagination.items
         output = []
 
-        for app in applicants:
-            status = "Pending"
-            if app.reviews:
-                status = app.reviews[0].status
-
+        for app in applications:
             output.append({
-                "id": app.applicant_id,
-                "full_name": f"{app.first_name} {app.last_name}",
-                "email": app.email,
-                "qualification": app.qualification,
-                "work_experience": app.work_experience,
-                "status": status,
-                "created_at": app.created_at.isoformat()
+                "application_id": app.review_id,
+                "applicant_id": app.applicant_id,
+                "full_name": f"{app.applicant.first_name} {app.applicant.last_name}",
+                "email": app.applicant.email,
+                "job_id": app.job_id,
+                "job_title": app.job.title,   # ⭐ IMPORTANT
+                "status": app.status,
+                "comments": app.comments,
+                "applied_at": app.reviewed_at.isoformat()
             })
 
         return {
@@ -40,35 +38,37 @@ class AdminService:
         }
 
     @staticmethod
-    def get_single_application(applicant_id):
-        app = Applicant.query.get(applicant_id)
+    def get_single_application(application_id):
+        app = ApplicationReview.query.get(application_id)
 
         if not app:
             raise ValueError("Application not found")
+        
+        applicant = app.applicant
 
-        doc_url = app.document.document_url if app.document else None
+        doc_url = None
+        if applicant.document:
+            doc_url = applicant.document.document_url
 
-        review_data = {}
-
-        if app.reviews:
-            latest_review = app.reviews[0]
-            review_data = {
-                "status": latest_review.status,
-                "comments": latest_review.comments,
-                "reviewed_at": latest_review.reviewed_at.isoformat()
-            }
-
-        data = app.to_dict()
-        data["document_url"] = doc_url
-        data["review"] = review_data
-
+        data = {
+            "application_id": app.review_id,
+            "applicant_id": applicant.applicant_id,
+            "full_name": f"{applicant.first_name} {applicant.last_name}",
+            "email": applicant.email,
+            "job_id": app.job_id,
+            "job_title": app.job.title,
+            "status": app.status,
+            "comments": app.comments,
+            "reviewed_at": app.reviewed_at.isoformat(),
+            "document_url": doc_url
+        }
         return data
-
+    
     @staticmethod
-    def review_application(applicant_id, status, comments, admin_id):
+    def review_application(applicant_id, job_id, status, comments, admin_id):
 
-        if not status or not admin_id:
-            raise ValueError("Status and Admin ID required")
+        if not status or not admin_id or not job_id_id:
+            raise ValueError("Status, Job ID and Admin ID required")
 
         admin = Admin.query.get(admin_id)
         if not admin:
@@ -79,22 +79,22 @@ class AdminService:
             raise ValueError("Applicant not found")
 
         review = ApplicationReview.query.filter_by(
-            applicant_id=applicant_id
+            applicant_id=applicant_id,
+            job_id=job_id
         ).first()
 
-        if review:
-            review.status = status
-            review.comments = comments
-        else:
-            review = ApplicationReview(
-                applicant_id=applicant_id,
-                admin_id=admin_id,
-                status=status,
-                comments=comments
-            )
-            db.session.add(review)
+
+        if not review:
+            raise ValueError("Application not found")
+
+        
+        review.status = status
+        review.comments = comments
+        review.admin_id = admin_id
 
         db.session.commit()
+
+        applicant=review.applicant
 
         # Send email when status is updated
         EmailService.send_status_update_email(
@@ -129,3 +129,33 @@ class AdminService:
             ])
 
         return output.getvalue()
+    
+    @staticmethod
+    def update_job(job_id, data):
+        job = Job.query.get(job_id)
+
+        if not job:
+            raise ValueError("Job not found")
+
+        # Update fields only if provided
+        if data.get("title"):
+            job.title = data.get("title")
+
+        if data.get("description"):
+            job.description = data.get("description")
+
+        if data.get("location"):
+            job.location = data.get("location")
+
+        if data.get("salary"):
+            job.salary = data.get("salary")
+
+        # ✅ Handle draft/published
+        if data.get("status"):
+            if data.get("status") not in ["draft", "published"]:
+                raise ValueError("Invalid status")
+            job.status = data.get("status")
+
+        db.session.commit()
+
+        return job
