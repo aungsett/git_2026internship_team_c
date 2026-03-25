@@ -2,17 +2,26 @@ from flask import Blueprint, request, jsonify
 from app.utils.decorators import applicant_required
 from app.services.applicant_service import ApplicantService
 from app.services.cv_parser_service import CVParserService
+from app.utils.cloudinary import generate_upload_signature
 from app.extensions import db
+import uuid
 
 applicant_bp = Blueprint("applicant", __name__)
 
+@applicant_bp.route("/cloudinary-signature", methods=["GET"])
+def get_cloudinary_signature():
+    try:
+        temp_id = str(uuid.uuid4())
+        sig_data = generate_upload_signature(temp_id)
+        return jsonify({"success": True, "data": sig_data}), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
 @applicant_bp.route("/submit", methods=["POST"])
-# @applicant_required
 def submit_application():
     try:
-        data = request.form
-        file = request.files.get("file")
-        applicant = ApplicantService.submit_application(data, file)
+        data = request.get_json()
+        applicant = ApplicantService.submit_application(data)
         return jsonify({
             "success": True,
             "message": "Application Submitted",

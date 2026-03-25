@@ -106,10 +106,8 @@ export default function Page() {
 	};
 
 	const handleInputChange = (
-		e: React.ChangeEvent<
-			HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-		>,
-	) => {
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+) => {
 		const { name, value, type } = e.target;
 		const checked =
 			type === "checkbox"
@@ -133,47 +131,37 @@ export default function Page() {
 		setLoading(true);
 
 		try {
-			const payload = new FormData();
+			// Step 1: upload CV directly to Cloudinary from the browser
+			const cvUrl = await api.uploadCVToCloudinary(cvFile);
 
-			// Basic fields
-			payload.append("first_name", formData.firstName);
-			payload.append("last_name", formData.lastName);
-			payload.append("email", formData.email);
-			payload.append("phone_number", formData.phone);
-			payload.append("address", formData.currentAddress);
-			payload.append("date_of_birth", formData.dateOfBirth);
-			payload.append("qualification", formData.highestQualification);
-			payload.append("college", formData.college);
-			payload.append("work_experience", formData.yearsOfExperience);
-			payload.append(
-				"preferred_japanese_course",
-				formData.preferredJapaneseCourse,
-			);
-			payload.append("comments", formData.additionalNotes);
+			// Step 2: send JSON to Flask with cv_url instead of the file
+			await api.submitApplication({
+				first_name: formData.firstName,
+				last_name: formData.lastName,
+				email: formData.email,
+				phone_number: formData.phone,
+				address: formData.currentAddress,
+				date_of_birth: formData.dateOfBirth,
+				qualification: formData.highestQualification,
+				college: formData.college,
+				work_experience: formData.yearsOfExperience,
+				preferred_japanese_course: formData.preferredJapaneseCourse,
+				comments: formData.additionalNotes,
+				skills: formData.coreSkills
+					.split(",")
+					.map((s) => s.trim())
+					.filter(Boolean),
+				language: formData.languagesKnown
+					.split(",")
+					.map((s) => s.trim())
+					.filter(Boolean),
+				social_links: [
+					formData.linkedIn,
+					formData.portfolioGithub,
+				].filter(Boolean),
+				cv_url: cvUrl,
+			});
 
-			// Arrays — split comma separated strings
-			formData.coreSkills
-				.split(",")
-				.map((s) => s.trim())
-				.filter(Boolean)
-				.forEach((skill) => payload.append("skills", skill));
-
-			formData.languagesKnown
-				.split(",")
-				.map((s) => s.trim())
-				.filter(Boolean)
-				.forEach((lang) => payload.append("language", lang));
-
-			// Social links
-			if (formData.linkedIn)
-				payload.append("social_links", formData.linkedIn);
-			if (formData.portfolioGithub)
-				payload.append("social_links", formData.portfolioGithub);
-
-			// CV file
-			payload.append("file", cvFile);
-
-			await api.submitApplication(payload);
 			setSuccess(true);
 		} catch (err: any) {
 			setError(err.message || "Something went wrong. Please try again.");

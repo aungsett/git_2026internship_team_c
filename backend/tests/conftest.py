@@ -5,16 +5,11 @@ from app.extensions import db
 
 @pytest.fixture
 def app():
-    # Create app instance
-    app = create_app()
-
-    # Override config for testing
-    app.config.update({
+    app = create_app({
         "TESTING": True,
         "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:"
     })
 
-    # Create temporary database
     with app.app_context():
         db.create_all()
         yield app

@@ -22,7 +22,6 @@ export const api = {
   // Jobs (Admin)
   createJob: async (payload: object) => {
     const csrfToken = getCsrfToken();
-
     const response = await fetch(`${BASE_URL}/admin/jobs`, {
       method: "POST",
       headers: {
@@ -37,11 +36,43 @@ export const api = {
     return data;
   },
 
-  // Applicant
-  submitApplication: async (formData: FormData) => {
+  // ← NEW: get Cloudinary signature from Flask
+  getCloudinarySignature: async () => {
+    const response = await fetch(`${BASE_URL}/applicant/cloudinary-signature`);
+    const data = await response.json();
+    if (!data.success) throw new Error(data.error);
+    return data.data;
+  },
+
+  // ← NEW: upload CV directly to Cloudinary from the browser
+  uploadCVToCloudinary: async (file: File) => {
+    const sig = await api.getCloudinarySignature();
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("signature", sig.signature);
+    formData.append("timestamp", String(sig.timestamp));
+    formData.append("api_key", sig.api_key);
+    formData.append("folder", sig.folder);
+    formData.append("public_id", sig.public_id);
+    formData.append("overwrite", "true");
+
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/${sig.cloud_name}/auto/upload`,
+      { method: "POST", body: formData }
+    );
+
+    if (!response.ok) throw new Error("CV upload to Cloudinary failed");
+    const result = await response.json();
+    return result.secure_url;
+  },
+
+  // ← UPDATED: now sends JSON instead of FormData
+  submitApplication: async (payload: object) => {
     const response = await fetch(`${BASE_URL}/applicant/submit`, {
       method: "POST",
-      body: formData,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
     });
     const data = await response.json();
     if (!data.success) throw new Error(data.error);
