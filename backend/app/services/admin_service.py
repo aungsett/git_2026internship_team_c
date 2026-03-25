@@ -13,7 +13,7 @@ class AdminService:
     @staticmethod
     def get_all_applications(page=1, per_page=10):
         pagination = ApplicationReview.query.order_by(
-            ApplicationReview.created_at.desc()
+            ApplicationReview.reviewed_at.desc()
         ).paginate(page=page, per_page=per_page, error_out=False)
 
         applications = pagination.items
