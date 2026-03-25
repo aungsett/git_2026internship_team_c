@@ -23,7 +23,7 @@ class Job(db.Model):
     # Example: Full-time, Internship, Contract
     department = db.Column(db.String(100), nullable=True)
     salary_range = db.Column(db.String(100), nullable=True)
-    experience_required = db.Column(db.Integer, nullable=True)
+    experience_required = db.Column(db.Integer, nullable=True, default=0)
     skills = db.Column(ARRAY(db.String),nullable=True)
     application_deadline = db.Column(db.Date, nullable = True)
 
