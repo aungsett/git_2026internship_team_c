@@ -35,6 +35,16 @@ export interface Job {
 	updated_at: string | null;
 }
 
+export const formatDate = (dateString: string): string => {
+	const date = new Date(dateString);
+
+	return date.toLocaleDateString("en-US", {
+		month: "long",
+		day: "numeric",
+		year: "numeric",
+	});
+};
+
 export const useJobDetails = () => {
 	const [jobDetails, setJobDetails] = useState<Job>();
 	const [loading, setLoading] = useState(true);
@@ -49,15 +59,7 @@ export const useJobDetails = () => {
 
 		return parts[1].toUpperCase();
 	};
-	const formatDate = (dateString: string): string => {
-		const date = new Date(dateString);
 
-		return date.toLocaleDateString("en-US", {
-			month: "long",
-			day: "numeric",
-			year: "numeric",
-		});
-	};
 	useEffect(() => {
 		const fetchJobs = async () => {
 			try {
