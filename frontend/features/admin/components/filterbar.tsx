@@ -28,7 +28,7 @@ interface FilterBarProps {
 
 const getUniqueQualifications = (apps: Application[]) => {
 	return Array.from(
-		new Set(apps.map((app) => app.qualification).filter(Boolean))
+		new Set(apps.map((app) => app.qualification).filter(Boolean)),
 	).sort() as string[];
 };
 
@@ -38,16 +38,16 @@ const getUniqueExperiences = (apps: Application[]) => {
 			apps
 				.map((app) => app.work_experience)
 				.filter((e) => e != null)
-				.map(String)
-		)
+				.map(String),
+		),
 	).sort((a, b) => parseInt(a) - parseInt(b));
 };
 
 const getUniqueCourses = (apps: Application[]) => {
 	return Array.from(
 		new Set(
-			apps.map((app) => app.preferred_japanese_course).filter(Boolean)
-		)
+			apps.map((app) => app.preferred_japanese_course).filter(Boolean),
+		),
 	).sort() as string[];
 };
 
@@ -71,13 +71,13 @@ export const FilterBar = ({
 				{/* Search */}
 				<div>
 					<label className="mb-2 block text-sm font-medium text-gray-700">
-						Search Applicant
+						Search
 					</label>
 					<div className="relative">
 						<Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
 						<Input
 							type="text"
-							placeholder="Name or email..."
+							placeholder="Name, email, job title..."
 							value={search}
 							onChange={(e) => setSearch(e.target.value)}
 							className="pl-10"
@@ -94,7 +94,7 @@ export const FilterBar = ({
 						value={qualification}
 						onValueChange={setQualification}
 					>
-						<SelectTrigger>
+						<SelectTrigger className="capitalize">
 							<SelectValue placeholder="Any Qualification" />
 						</SelectTrigger>
 						<SelectContent>
@@ -103,7 +103,11 @@ export const FilterBar = ({
 							</SelectItem>
 							{getUniqueQualifications(applications).map(
 								(qual) => (
-									<SelectItem key={qual} value={qual}>
+									<SelectItem
+										key={qual}
+										value={qual}
+										className="capitalize"
+									>
 										{qual}
 									</SelectItem>
 								),
@@ -138,13 +142,17 @@ export const FilterBar = ({
 						Preferred Course
 					</label>
 					<Select value={course} onValueChange={setCourse}>
-						<SelectTrigger>
+						<SelectTrigger className="capitalize">
 							<SelectValue placeholder="Select Course" />
 						</SelectTrigger>
 						<SelectContent>
 							<SelectItem value="any">Any Course</SelectItem>
 							{getUniqueCourses(applications).map((c) => (
-								<SelectItem key={c} value={c}>
+								<SelectItem
+									key={c}
+									value={c}
+									className="capitalize"
+								>
 									{c}
 								</SelectItem>
 							))}
@@ -174,11 +182,12 @@ export const FilterBar = ({
 
 			{/* Action Buttons */}
 			<div className="mt-6 flex justify-end gap-3">
-				<Button variant="outline" onClick={handleReset}>
+				<Button
+					variant="outline"
+					onClick={handleReset}
+					className="hover:bg-red-600 hover:text-white transition-all"
+				>
 					Reset
-				</Button>
-				<Button className="bg-blue-600 hover:bg-blue-700">
-					Apply Filters
 				</Button>
 			</div>
 		</div>

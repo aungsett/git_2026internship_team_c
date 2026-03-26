@@ -6,6 +6,7 @@ import { FilterBar } from "./filterbar";
 import { ApplicantsSheet } from "./applicants-sheet";
 import { Pagination } from "./pagination";
 import { useAdmin } from "@/features/hooks/useAdmin";
+import { Loader } from "@/components/landing/loader";
 
 export default function ApplicationsPage() {
 	const {
@@ -46,7 +47,7 @@ export default function ApplicationsPage() {
 				{/* Header */}
 				<div className="mb-8 flex items-start justify-between">
 					<div>
-						<h1 className="text-4xl font-bold text-gray-900">
+						<h1 className="text-3xl font-bold text-gray-900">
 							Applications Overview
 						</h1>
 						<p className="mt-2 text-gray-600">
@@ -78,39 +79,41 @@ export default function ApplicationsPage() {
 					applications={applications}
 				/>
 
-				{/* Results Badge */}
-				<div className="mb-6 flex items-center gap-2">
-					<span className="text-sm text-gray-600">Showing</span>
-					<Badge variant="default" className="bg-blue-600">
-						{filteredApplications.length}
-					</Badge>
-					<span className="text-sm text-gray-600">
-						of {applications.length} applications
-					</span>
-				</div>
+				{loading ? (
+					<Loader />
+				) : (
+					<>
+						{/* Results Badge */}
+						<div className="mb-6 flex items-center gap-2">
+							<span className="text-sm text-gray-600">
+								Showing
+							</span>
+							<Badge variant="default" className="bg-blue-600">
+								{filteredApplications.length}
+							</Badge>
+							<span className="text-sm text-gray-600">
+								of {applications.length} applications
+							</span>
+						</div>
 
-				{loading && (
-					<div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">
-						Loading latest applications...
-					</div>
+						{/* Table */}
+						<ApplicantsSheet
+							filteredApplications={filteredApplications}
+							startIdx={startIdx}
+							endIdx={endIdx}
+						/>
+
+						{/* Pagination Footer */}
+						<Pagination
+							filteredApplications={filteredApplications}
+							startIdx={startIdx}
+							endIdx={endIdx}
+							currentPage={currentPage}
+							itemsPerPage={itemsPerPage}
+							setCurrentPage={setCurrentPage}
+						/>
+					</>
 				)}
-
-				{/* Table */}
-				<ApplicantsSheet
-					filteredApplications={filteredApplications}
-					startIdx={startIdx}
-					endIdx={endIdx}
-				/>
-
-				{/* Pagination Footer */}
-				<Pagination
-					filteredApplications={filteredApplications}
-					startIdx={startIdx}
-					endIdx={endIdx}
-					currentPage={currentPage}
-					itemsPerPage={itemsPerPage}
-					setCurrentPage={setCurrentPage}
-				/>
 			</div>
 		</main>
 	);
