@@ -1,4 +1,5 @@
 "use client";
+import { Loader } from "@/components/landing/loader";
 import { Badge } from "@/components/ui/badge";
 import { Pagination } from "@/features/admin/components/pagination";
 import { useJoblisting } from "@/features/hooks/useJobListing";
@@ -72,39 +73,40 @@ export default function Page() {
 					jobs={jobs}
 				/>
 
-				{/* Results Badge */}
-				<div className="mb-6 flex items-center gap-2">
-					<span className="text-sm text-gray-600">Showing</span>
-					<Badge variant="default" className="bg-blue-600">
-						{filteredJobs.length}
-					</Badge>
-					<span className="text-sm text-gray-600">
-						of {jobs.length} applications
-					</span>
-				</div>
+				{loading ? (
+					<Loader />
+				) : (
+					<>
+						{/* Results Badge */}
+						<div className="mb-6 flex items-center gap-2">
+							<span className="text-sm text-gray-600">
+								Showing
+							</span>
+							<Badge variant="default" className="bg-blue-600">
+								{filteredJobs.length}
+							</Badge>
+							<span className="text-sm text-gray-600">
+								of {jobs.length} applications
+							</span>
+						</div>
+						{/* Table */}
+						<JobsTable
+							filteredJobs={filteredJobs}
+							startIdx={startIdx}
+							endIdx={endIdx}
+						/>
 
-				{loading && (
-					<div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">
-						Loading jobs...
-					</div>
+						{/* Pagination Footer */}
+						<Pagination
+							filteredJobs={filteredJobs}
+							startIdx={startIdx}
+							endIdx={endIdx}
+							currentPage={currentPage}
+							itemsPerPage={itemsPerPage}
+							setCurrentPage={setCurrentPage}
+						/>
+					</>
 				)}
-
-				{/* Table */}
-				<JobsTable
-					filteredJobs={filteredJobs}
-					startIdx={startIdx}
-					endIdx={endIdx}
-				/>
-
-				{/* Pagination Footer */}
-				<Pagination
-					filteredJobs={filteredJobs}
-					startIdx={startIdx}
-					endIdx={endIdx}
-					currentPage={currentPage}
-					itemsPerPage={itemsPerPage}
-					setCurrentPage={setCurrentPage}
-				/>
 			</div>
 		</main>
 	);
