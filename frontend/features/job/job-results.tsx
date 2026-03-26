@@ -20,13 +20,21 @@ interface JobResultsProps {
 	itemsPerPage: number;
 }
 
-export function JobResults({
+export const toSlug = (title: string): string => {
+	return title
+		.toLowerCase()
+		.trim()
+		.replace(/[^a-z0-9\s-]/g, "")
+		.replace(/\s+/g, "-");
+};
+
+export const JobResults = ({
 	jobs,
 	currentPage,
 	onPageChange,
 	itemsPerPage,
 	totalResults,
-}: JobResultsProps) {
+}: JobResultsProps) => {
 	const startIndex = (currentPage - 1) * itemsPerPage;
 	const endIndex = startIndex + itemsPerPage;
 	const paginatedJobs = jobs.slice(startIndex, endIndex);
@@ -34,17 +42,10 @@ export function JobResults({
 
 	const getEmploymentTypeColor = (type: string) => {
 		return type === "Full-time"
-			? "bg-emerald-100 text-emerald-800"
-			: "bg-amber-100 text-amber-800";
+			? "bg-emerald-100 text-emerald-800 hover:bg-emerald-100 hover:cursor-default hover:text-emerald-800"
+			: "bg-amber-100 text-amber-800 hover:bg-amber-100 hover:cursor-default hover:text-amber-800";
 	};
 
-	const toSlug = (title: string): string => {
-		return title
-			.toLowerCase()
-			.trim()
-			.replace(/[^a-z0-9\s-]/g, "")
-			.replace(/\s+/g, "-");
-	};
 	return (
 		<div className="space-y-6">
 			{/* Results Badge */}
@@ -106,7 +107,7 @@ export function JobResults({
 									<div className="flex flex-wrap gap-2">
 										<Badge
 											className={
-												"bg-pink-100 text-pink-800"
+												"bg-pink-100 text-pink-800 hover:bg-pink-100 hover:cursor-default hover:text-pink-800"
 											}
 										>
 											{job.department}
@@ -123,7 +124,7 @@ export function JobResults({
 									{/* Details */}
 									<Badge
 										variant={"secondary"}
-										className="flex items-center gap-2 text-red-800 w-fit bg-red-100"
+										className="flex items-center gap-2 text-red-800 w-fit bg-red-100 hover:bg-red-100 hover:cursor-default hover:text-red-800"
 									>
 										<GraduationCap className="w-4 h-4" />
 										<span>
@@ -183,4 +184,4 @@ export function JobResults({
 			)}
 		</div>
 	);
-}
+};
