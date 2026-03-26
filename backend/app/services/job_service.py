@@ -7,10 +7,10 @@ from sqlalchemy.exc import IntegrityError
 class JobService:
 
     @staticmethod
-    def get_all_jobs(page=1, per_page=10):
-        pagination = Job.query.order_by(
+    def get_all_jobs():
+        pagination = Job.query.filter_by(status="Published").order_by(
             Job.created_at.desc()
-        ).paginate(page=page, per_page=per_page, error_out=False)
+        ).paginate(error_out=False)
 
         jobs = pagination.items
         output = []
