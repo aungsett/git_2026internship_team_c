@@ -81,7 +81,7 @@ def export_csv():
 
 @admin_bp.route("/jobs", methods=["GET"])
 @admin_required
-def get_all_applications():
+def get_all_jobs():
     try:
         
         result = AdminService.get_all_jobs()
