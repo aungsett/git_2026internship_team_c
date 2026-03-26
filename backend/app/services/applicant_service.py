@@ -48,12 +48,12 @@ class ApplicantService:
                 raise ValueError("Applicant must be at least 18 years old")
         
         job_id = data.get("job_id")
-        job = Job.query.get(job_id)
+        job = Job.query.filter_by(job_id=job_id).first()
 
         if not job:
             raise ValueError("Invalid job_id")
 
-        if job.status != "published":
+        if job.status != "Published":
             raise ValueError("Job is not open for applications")
         
         applicant = Applicant(
