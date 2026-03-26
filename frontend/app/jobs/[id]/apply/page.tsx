@@ -8,15 +8,18 @@ import { usePathname } from "next/navigation";
 
 export default function Page() {
 	const pathname = usePathname();
-	const extractJobTitle = (pathname: string): string | null => {
+	const extract = (pathname: string) => {
 		const segments = pathname.split("/");
 		const slug = segments[2];
 		if (!slug) return null;
-		const titlePart = slug.split("-job-id-")[0];
-		return titlePart
-			.split("-")
-			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-			.join(" ");
+		const titlePart =
+			slug
+				.split("-job-id-")[0]
+				.split("-")
+				.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+				.join(" ") + "";
+		const jobId = slug.split("-job-id-")[1];
+		return { titlePart, jobId };
 	};
 	const [parseAI, setParseAI] = useState(false);
 	const [formData, setFormData] = useState({
@@ -150,6 +153,10 @@ export default function Page() {
 				formData.preferredJapaneseCourse,
 			);
 			payload.append("comments", formData.additionalNotes);
+			payload.append(
+				"job_id",
+				extract(pathname)?.jobId.toUpperCase() + "",
+			);
 
 			// Arrays — split comma separated strings
 			formData.coreSkills
@@ -220,7 +227,7 @@ export default function Page() {
 				<div className="max-w-4xl mx-auto">
 					<div className="mb-8">
 						<h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
-							Apply for {extractJobTitle(pathname)}
+							Apply for {extract(pathname)?.titlePart}
 						</h1>
 						<p className="text-slate-600">
 							Please fill out the form below to submit your

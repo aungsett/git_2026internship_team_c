@@ -11,25 +11,29 @@ import io
 class AdminService:
 
     @staticmethod
-    def get_all_applications(page=1, per_page=10):
+    def get_all_applications():
         pagination = ApplicationReview.query.order_by(
             ApplicationReview.reviewed_at.desc()
-        ).paginate(page=page, per_page=per_page, error_out=False)
+        ).paginate(error_out=False)
 
         applications = pagination.items
         output = []
 
         for app in applications:
+            applicant = app.applicant
+
             output.append({
-                "application_id": app.review_id,
-                "applicant_id": app.applicant_id,
-                "full_name": f"{app.applicant.first_name} {app.applicant.last_name}",
-                "email": app.applicant.email,
+                "id": app.applicant_id,
+                "full_name": f"{applicant.first_name} {applicant.last_name}",
+                "email": applicant.email,
+                "phone_number": applicant.phone_number,
+                "qualification": applicant.qualification,
+                "work_experience": applicant.work_experience,
+                "preferred_japanese_course": applicant.preferred_japanese_course,
                 "job_id": app.job_id,
-                "job_title": app.job.title,   
+                "job_title": app.job.title,
                 "status": app.status,
-                "comments": app.comments,
-                "applied_at": app.reviewed_at.isoformat()
+                "created_at": applicant.created_at.isoformat(),
             })
 
         return {
@@ -40,7 +44,7 @@ class AdminService:
 
     @staticmethod
     def get_single_application(application_id):
-        app = ApplicationReview.query.get(application_id)
+        app = ApplicationReview.query.filter_by(applicant_id=application_id).first()
 
         if not app:
             raise ValueError("Application not found")
@@ -52,23 +56,38 @@ class AdminService:
             doc_url = applicant.document.document_url
 
         data = {
-            "application_id": app.review_id,
             "applicant_id": applicant.applicant_id,
-            "full_name": f"{applicant.first_name} {applicant.last_name}",
+            "first_name": applicant.first_name,
+            "last_name": applicant.last_name,
             "email": applicant.email,
+            "phone_number": applicant.phone_number,
+            "skills": applicant.skills,
+            "created_at": applicant.created_at.isoformat(),
+            "date_of_birth": applicant.date_of_birth,
+            "work_experience": applicant.work_experience,
+            "qualification": applicant.qualification,
+            "address": applicant.address,
+            "college": applicant.college,
+            "status": app.status,
+            "preferred_japanese_course": applicant.preferred_japanese_course,
+            "language": applicant.language,
+            "social_links": applicant.social_links,
+            "document_url": doc_url,
             "job_id": app.job_id,
             "job_title": app.job.title,
-            "status": app.status,
-            "comments": app.comments,
-            "reviewed_at": app.reviewed_at.isoformat(),
-            "document_url": doc_url
+            "review": {
+                "application_id": app.review_id,
+                "comments": app.comments,
+                "reviewed_at": app.reviewed_at.isoformat(),
+                "admin_id": app.admin_id
+            }
         }
         return data
     
     @staticmethod
-    def review_application(applicant_id, job_id, status, comments, admin_id):
+    def review_application(applicant_id, job_id, status, admin_id):
 
-        if not status or not admin_id or not job_id_id:
+        if not status or not admin_id or not job_id:
             raise ValueError("Status, Job ID and Admin ID required")
 
         admin = Admin.query.get(admin_id)
@@ -90,7 +109,6 @@ class AdminService:
 
         
         review.status = status
-        review.comments = comments
         review.admin_id = admin_id
 
         db.session.commit()
@@ -106,6 +124,39 @@ class AdminService:
 
         return True
 
+    @staticmethod
+    def get_all_jobs():
+        pagination = Job.query.order_by(
+            Job.created_at.desc()
+        ).paginate(error_out=False)
+
+        jobs = pagination.items
+        output = []
+
+        for job in jobs:
+            output.append({
+                "id": job.id,
+                "job_id": job.job_id,
+                "title": job.title,
+                "location": job.location,
+                "employment_type": job.employment_type,
+                "department": job.department,
+                "description":job.description,
+                "salary_range": job.salary_range,
+                "experience_required": job.experience_required,
+                "skills": job.skills,
+                "application_deadline": job.application_deadline.isoformat() if job.application_deadline else None,
+                "status": job.status,
+                "created_at": job.created_at.isoformat()                
+            })
+
+        return {
+            "data": output,
+            "total": pagination.total,
+            "pages": pagination.pages
+        }
+        
+        
     @staticmethod
     def export_applicants_csv():
         applicants = Applicant.query.all()

@@ -9,10 +9,10 @@ job_bp = Blueprint("job", __name__)
 @job_bp.route("/", methods=["GET"])
 def get_all_jobs():
     try:
-        page = request.args.get("page", 1, type=int)
-        per_page = request.args.get("per_page", 10, type=int)
+        # page = request.args.get("page", 1, type=int)
+        # per_page = request.args.get("per_page", 10, type=int)
 
-        result = JobService.get_all_jobs(page, per_page)
+        result = JobService.get_all_jobs()
 
         return jsonify({
             "success": True,

@@ -14,15 +14,23 @@ const filterAndSortApplications = (
 ): Application[] => {
 	let filtered = apps.filter((app) => {
 		const searchLower = search.toLowerCase();
+
 		const matchesSearch =
 			app.full_name.toLowerCase().includes(searchLower) ||
-			app.email.toLowerCase().includes(searchLower);
+			app.email.toLowerCase().includes(searchLower) ||
+			app.job_id.toLowerCase().includes(searchLower) ||
+			app.job_title.toLowerCase().includes(searchLower);
+
 		const matchesQualification =
 			qualification === "any" || app.qualification === qualification;
+
 		const matchesExperience =
-			experience === "any" || String(app.work_experience) === experience;
+			experience === "any" ||
+			String(app.work_experience ?? "").includes(experience);
+
 		const matchesCourse =
 			course === "any" || app.preferred_japanese_course === course;
+
 		return (
 			matchesSearch &&
 			matchesQualification &&
@@ -107,9 +115,12 @@ export const useAdmin = () => {
 			"Qualification",
 			"Experience",
 			"Course",
+			"Job ID",
+			"Job Title",
 			"Status",
 			"Applied Date",
 		];
+
 		const rows = filteredApplications.map((app) => [
 			app.full_name,
 			app.email,
@@ -117,19 +128,29 @@ export const useAdmin = () => {
 			app.qualification ?? "",
 			app.work_experience ?? "",
 			app.preferred_japanese_course ?? "",
+			app.job_id,
+			app.job_title,
 			app.status,
 			app.created_at,
 		]);
+
 		const csvContent = [
 			headers.join(","),
-			...rows.map((row) => row.map((cell) => `"${cell}"`).join(",")),
+			...rows.map((row) =>
+				row
+					.map((cell) => `"${String(cell).replace(/"/g, '""')}"`)
+					.join(","),
+			),
 		].join("\n");
+
 		const blob = new Blob([csvContent], { type: "text/csv" });
 		const url = window.URL.createObjectURL(blob);
+
 		const a = document.createElement("a");
 		a.href = url;
 		a.download = "applications.csv";
 		a.click();
+
 		window.URL.revokeObjectURL(url);
 	};
 

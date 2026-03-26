@@ -1,10 +1,11 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Application } from "@/lib/types";
+import { Application, Job } from "@/lib/types";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface PaginationProps {
-	filteredApplications: Application[];
+	filteredApplications?: Application[];
+	filteredJobs?: Job[];
 	startIdx: number;
 	endIdx: number;
 	currentPage: number;
@@ -14,19 +15,31 @@ interface PaginationProps {
 
 export const Pagination = ({
 	filteredApplications,
+	filteredJobs,
 	startIdx,
 	endIdx,
 	currentPage,
 	itemsPerPage,
 	setCurrentPage,
 }: PaginationProps) => {
-	const totalPages = Math.ceil(filteredApplications.length / itemsPerPage);
+	const totalPages = Math.ceil(
+		(filteredApplications?.length || filteredJobs?.length || 0) /
+			itemsPerPage,
+	);
 	return (
 		<div className="mt-6 flex items-center justify-between">
 			<p className="text-sm text-gray-600">
-				Showing {filteredApplications.length > 0 ? startIdx + 1 : 0}-
-				{Math.min(endIdx, filteredApplications.length)} of{" "}
-				{filteredApplications.length} applications
+				Showing{" "}
+				{(filteredApplications?.length || filteredJobs?.length || 0) > 0
+					? startIdx + 1
+					: 0}
+				-
+				{Math.min(
+					endIdx,
+					filteredApplications?.length || filteredJobs?.length || 0,
+				)}{" "}
+				of {filteredApplications?.length || filteredJobs?.length || 0}{" "}
+				{filteredApplications?.length ? "applications" : "jobs"}
 			</p>
 			<div className="flex items-center gap-1">
 				<Button

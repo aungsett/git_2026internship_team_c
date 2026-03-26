@@ -11,14 +11,31 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { useAuth } from "../hooks/useAuth";
 
 function formatSegment(segment: string) {
 	const decoded = decodeURIComponent(segment);
 
-	// Remove everything after "-job-id-"
-	const cleanSegment = decoded.split("-job-id-")[0];
+	if (decoded.includes("-job-id-")) {
+		const title = decoded.split("-job-id-")[0];
 
-	return cleanSegment
+		return title
+			.split("-")
+			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+			.join(" ");
+	}
+
+	if (decoded.includes("=")) {
+		const [key, value] = decoded.split("=");
+
+		const formattedKey = key
+			.replace(/-/g, " ")
+			.replace(/\b\w/g, (c) => c.toUpperCase());
+
+		return `${formattedKey} ${value}`;
+	}
+
+	return decoded
 		.split("-")
 		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
 		.join(" ");
@@ -26,9 +43,13 @@ function formatSegment(segment: string) {
 
 export const BreadcrumbBar = () => {
 	const pathname = usePathname();
-	const hideChrome = pathname === "/";
 	const segments = pathname.split("/").filter(Boolean);
-
+	const isDashboardRoute = pathname.startsWith("/dashboard");
+	const { isAuthenticated } = useAuth();
+	const showDashboardRoot = isAuthenticated && isDashboardRoute;
+	const hideChrome =
+		pathname === "/" || (showDashboardRoot && pathname === "/dashboard");
+	const adjustedSegments = showDashboardRoot ? segments.slice(1) : segments;
 	return (
 		<>
 			{!hideChrome && (
@@ -37,16 +58,28 @@ export const BreadcrumbBar = () => {
 						{/* Home breadcrumb */}
 						<BreadcrumbItem>
 							{segments.length === 0 ? (
-								<BreadcrumbPage>Home</BreadcrumbPage>
+								<BreadcrumbPage>
+									{showDashboardRoot ? "Dashboard" : "Home"}
+								</BreadcrumbPage>
 							) : (
 								<BreadcrumbLink asChild>
-									<Link href="/">Home</Link>
+									<Link
+										href={
+											showDashboardRoot
+												? "/dashboard"
+												: "/"
+										}
+									>
+										{showDashboardRoot
+											? "Dashboard"
+											: "Home"}
+									</Link>
 								</BreadcrumbLink>
 							)}
 						</BreadcrumbItem>
 
 						{/* Other segments */}
-						{segments.map((segment, index) => {
+						{adjustedSegments.map((segment, index) => {
 							const href =
 								"/" + segments.slice(0, index + 1).join("/");
 							const isLast = index === segments.length - 1;

@@ -1,21 +1,22 @@
+"use client";
 import { Download, GraduationCap, Save } from "lucide-react";
-import { StatusUpdate } from "./status-update";
 import { Applicant, StatusType } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-export const ApplicationHeader = ({
-	position,
-	applicant,
-	status,
-	setStatus,
-}: {
-	applicant: Applicant;
-	position: string;
-	status: StatusType;
-	setStatus: (status: StatusType) => void;
-}) => {
-	const { applicant_id, first_name, last_name, created_at, document_url } =
-		applicant;
+import { useReviewApplicant } from "@/features/hooks/useReviewApplicant";
+import { StatusUpdate } from "./status-update";
+export const ApplicationHeader = ({ applicant }: { applicant: Applicant }) => {
+	const {
+		applicant_id,
+		first_name,
+		last_name,
+		created_at,
+		document_url,
+		status,
+		job_id,
+	} = applicant;
+	const { appStatus, setAppStatus, handleSave, hasChanged, loading } =
+		useReviewApplicant(status);
 	const applicantName = `${first_name} ${last_name}`;
 	const appliedDate = new Date(created_at).toLocaleDateString("en-US", {
 		year: "numeric",
@@ -50,7 +51,7 @@ export const ApplicationHeader = ({
 					<GraduationCap width="18" className="text-slate-500" />
 
 					<p className="font-medium text-slate-500 text-base tracking-[0] leading-6 whitespace-nowrap">
-						{position}
+						{applicant.job_title} | {applicant.job_id}
 					</p>
 				</div>
 			</div>
@@ -60,23 +61,28 @@ export const ApplicationHeader = ({
 					APPLICATION REVIEW STATUS
 				</div>
 
-				<StatusUpdate value={status} onChange={setStatus} />
+				<StatusUpdate value={appStatus} onChange={setAppStatus} />
 				<div className="flex items-center gap-2">
 					<Link href={document_url} passHref legacyBehavior>
 						<Button
 							variant={"outline"}
 							className="flex gap-2 items-center"
 						>
-							{" "}
 							<Download /> Download Resume
 						</Button>
 					</Link>
 					<Button
-						disabled
+						disabled={!hasChanged}
+						onClick={() =>
+							handleSave({
+								applicant_id,
+								job_id,
+							})
+						}
 						className="flex gap-2 items-center bg-blue-600 hover:bg-blue-700"
 					>
 						<Save />
-						Save Changes
+						{loading ? "Saving..." : "Save Changes"}
 					</Button>
 				</div>
 			</div>

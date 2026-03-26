@@ -1,38 +1,36 @@
 "use client";
-import { Download } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { FilterBar } from "./filterbar";
-import { ApplicantsSheet } from "./applicants-sheet";
-import { Pagination } from "./pagination";
-import { useAdmin } from "@/features/hooks/useAdmin";
 import { Loader } from "@/components/landing/loader";
+import { Badge } from "@/components/ui/badge";
+import { Pagination } from "@/features/admin/components/pagination";
+import { useJoblisting } from "@/features/hooks/useJobListing";
+import { FilterBar } from "@/features/job/filter-bar";
+import { JobsTable } from "@/features/job/jobs-table";
 
-export default function ApplicationsPage() {
+export default function Page() {
 	const {
-		applications,
+		jobs,
 		loading,
 		error,
 		search,
 		setSearch,
-		qualification,
-		setQualification,
+		status,
+		setStatus,
 		experience,
 		setExperience,
-		course,
-		setCourse,
+		department,
+		setDepartment,
+		employmentType,
+		setEmploymentType,
 		sort,
 		setSort,
 		currentPage,
 		setCurrentPage,
-		filteredApplications,
+		filteredJobs,
 		startIdx,
 		endIdx,
 		handleReset,
-		handleExportCSV,
 		itemsPerPage,
-	} = useAdmin();
-
+	} = useJoblisting();
 	if (error) {
 		return (
 			<main className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -40,43 +38,39 @@ export default function ApplicationsPage() {
 			</main>
 		);
 	}
-
 	return (
-		<main className="min-h-screen bg-gray-50">
+		<main className="min-h-screen px-10 py-4 flex flex-col gap-4">
 			<div className="">
 				{/* Header */}
 				<div className="mb-8 flex items-start justify-between">
 					<div>
 						<h1 className="text-3xl font-bold text-gray-900">
-							Applications Overview
+							Jobs Management
 						</h1>
 						<p className="mt-2 text-gray-600">
-							Review and manage recent job applications
+							Design and deploy high-impact roles. Manage your
+							organization's architectural talent pipeline with
+							precision.
 						</p>
 					</div>
-					<Button
-						onClick={handleExportCSV}
-						className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
-					>
-						<Download className="h-4 w-4" />
-						Export CSV
-					</Button>
 				</div>
 
 				{/* Filters Section */}
 				<FilterBar
 					search={search}
 					setSearch={setSearch}
-					qualification={qualification}
-					setQualification={setQualification}
+					status={status}
+					setStatus={setStatus}
 					experience={experience}
 					setExperience={setExperience}
-					course={course}
-					setCourse={setCourse}
+					department={department}
+					setDepartment={setDepartment}
+					employmentType={employmentType}
+					setEmploymentType={setEmploymentType}
 					sort={sort}
 					setSort={setSort}
 					handleReset={handleReset}
-					applications={applications}
+					jobs={jobs}
 				/>
 
 				{loading ? (
@@ -89,23 +83,22 @@ export default function ApplicationsPage() {
 								Showing
 							</span>
 							<Badge variant="default" className="bg-blue-600">
-								{filteredApplications.length}
+								{filteredJobs.length}
 							</Badge>
 							<span className="text-sm text-gray-600">
-								of {applications.length} applications
+								of {jobs.length} applications
 							</span>
 						</div>
-
 						{/* Table */}
-						<ApplicantsSheet
-							filteredApplications={filteredApplications}
+						<JobsTable
+							filteredJobs={filteredJobs}
 							startIdx={startIdx}
 							endIdx={endIdx}
 						/>
 
 						{/* Pagination Footer */}
 						<Pagination
-							filteredApplications={filteredApplications}
+							filteredJobs={filteredJobs}
 							startIdx={startIdx}
 							endIdx={endIdx}
 							currentPage={currentPage}

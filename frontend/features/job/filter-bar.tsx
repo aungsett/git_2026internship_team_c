@@ -8,76 +8,86 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Application, SortOrder } from "@/lib/types";
+import { Job, SortOrder } from "@/lib/types";
 import { Search } from "lucide-react";
 
 interface FilterBarProps {
 	search: string;
 	setSearch: (value: string) => void;
-	qualification: string;
-	setQualification: (value: string) => void;
+
+	status: string;
+	setStatus: (value: string) => void;
+
 	experience: string;
 	setExperience: (value: string) => void;
-	course: string;
-	setCourse: (value: string) => void;
+
+	department: string;
+	setDepartment: (value: string) => void;
+
+	employmentType: string;
+	setEmploymentType: (value: string) => void;
+
 	sort: SortOrder;
 	setSort: (value: SortOrder) => void;
+
 	handleReset: () => void;
-	applications: Application[];
+
+	jobs: Job[];
 }
 
-const getUniqueQualifications = (apps: Application[]) => {
+// 🔹 Helpers
+const getUniqueDepartments = (jobs: Job[]) => {
 	return Array.from(
-		new Set(apps.map((app) => app.qualification).filter(Boolean)),
+		new Set(jobs.map((job) => job.department).filter(Boolean)),
 	).sort() as string[];
 };
 
-const getUniqueExperiences = (apps: Application[]) => {
+const getUniqueExperiences = (jobs: Job[]) => {
 	return Array.from(
 		new Set(
-			apps
-				.map((app) => app.work_experience)
+			jobs
+				.map((job) => job.experience_required)
 				.filter((e) => e != null)
 				.map(String),
 		),
 	).sort((a, b) => parseInt(a) - parseInt(b));
 };
 
-const getUniqueCourses = (apps: Application[]) => {
+const getUniqueEmploymentTypes = (jobs: Job[]) => {
 	return Array.from(
-		new Set(
-			apps.map((app) => app.preferred_japanese_course).filter(Boolean),
-		),
+		new Set(jobs.map((job) => job.employment_type).filter(Boolean)),
 	).sort() as string[];
 };
 
 export const FilterBar = ({
 	search,
 	setSearch,
-	qualification,
-	setQualification,
+	status,
+	setStatus,
 	experience,
 	setExperience,
-	handleReset,
-	course,
-	setCourse,
+	department,
+	setDepartment,
+	employmentType,
+	setEmploymentType,
 	sort,
 	setSort,
-	applications,
+	handleReset,
+	jobs,
 }: FilterBarProps) => {
 	return (
 		<div className="mb-8 rounded-lg bg-white p-6 shadow-sm">
 			<div className="flex items-center gap-4 *:w-full">
-				{/* Search */}
+				{/* 🔍 Search */}
 				<div>
 					<label className="mb-2 block text-sm font-medium text-gray-700">
-						Search
+						Search Jobs
 					</label>
 					<div className="relative">
 						<Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
 						<Input
 							type="text"
-							placeholder="Name, email, job title..."
+							placeholder="Title, location..."
 							value={search}
 							onChange={(e) => setSearch(e.target.value)}
 							className="pl-10"
@@ -85,41 +95,50 @@ export const FilterBar = ({
 					</div>
 				</div>
 
-				{/* Qualification Filter */}
+				{/* 🟢 Status */}
 				<div>
 					<label className="mb-2 block text-sm font-medium text-gray-700">
-						Qualification
+						Status
 					</label>
-					<Select
-						value={qualification}
-						onValueChange={setQualification}
-					>
-						<SelectTrigger className="capitalize">
-							<SelectValue placeholder="Any Qualification" />
+					<Select value={status} onValueChange={setStatus}>
+						<SelectTrigger>
+							<SelectValue placeholder="Any Status" />
 						</SelectTrigger>
 						<SelectContent>
-							<SelectItem value="any">
-								Any Qualification
-							</SelectItem>
-							{getUniqueQualifications(applications).map(
-								(qual) => (
-									<SelectItem
-										key={qual}
-										value={qual}
-										className="capitalize"
-									>
-										{qual}
-									</SelectItem>
-								),
-							)}
+							<SelectItem value="any">Any Status</SelectItem>
+							<SelectItem value="Published">Published</SelectItem>
+							<SelectItem value="Draft">Draft</SelectItem>
 						</SelectContent>
 					</Select>
 				</div>
 
-				{/* Experience Filter */}
+				{/* 💼 Employment Type */}
 				<div>
 					<label className="mb-2 block text-sm font-medium text-gray-700">
-						Experience
+						Employment Type
+					</label>
+					<Select
+						value={employmentType}
+						onValueChange={setEmploymentType}
+					>
+						<SelectTrigger>
+							<SelectValue placeholder="Any Type" />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="any">Any Type</SelectItem>
+							{getUniqueEmploymentTypes(jobs).map((type) => (
+								<SelectItem key={type} value={type}>
+									{type}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				</div>
+
+				{/* 🧠 Experience */}
+				<div>
+					<label className="mb-2 block text-sm font-medium text-gray-700">
+						Experience Required
 					</label>
 					<Select value={experience} onValueChange={setExperience}>
 						<SelectTrigger>
@@ -127,7 +146,7 @@ export const FilterBar = ({
 						</SelectTrigger>
 						<SelectContent>
 							<SelectItem value="any">Any Experience</SelectItem>
-							{getUniqueExperiences(applications).map((exp) => (
+							{getUniqueExperiences(jobs).map((exp) => (
 								<SelectItem key={exp} value={exp}>
 									{exp} Year{exp !== "1" ? "s" : ""}
 								</SelectItem>
@@ -136,31 +155,27 @@ export const FilterBar = ({
 					</Select>
 				</div>
 
-				{/* Course Filter */}
+				{/* 🏢 Department */}
 				<div>
 					<label className="mb-2 block text-sm font-medium text-gray-700">
-						Preferred Course
+						Department
 					</label>
-					<Select value={course} onValueChange={setCourse}>
-						<SelectTrigger className="capitalize">
-							<SelectValue placeholder="Select Course" />
+					<Select value={department} onValueChange={setDepartment}>
+						<SelectTrigger>
+							<SelectValue placeholder="Any Department" />
 						</SelectTrigger>
 						<SelectContent>
-							<SelectItem value="any">Any Course</SelectItem>
-							{getUniqueCourses(applications).map((c) => (
-								<SelectItem
-									key={c}
-									value={c}
-									className="capitalize"
-								>
-									{c}
+							<SelectItem value="any">Any Department</SelectItem>
+							{getUniqueDepartments(jobs).map((dept) => (
+								<SelectItem key={dept} value={dept}>
+									{dept}
 								</SelectItem>
 							))}
 						</SelectContent>
 					</Select>
 				</div>
 
-				{/* Sorting */}
+				{/* 📅 Sorting */}
 				<div>
 					<label className="mb-2 block text-sm font-medium text-gray-700">
 						Sort By Date
@@ -180,7 +195,7 @@ export const FilterBar = ({
 				</div>
 			</div>
 
-			{/* Action Buttons */}
+			{/* 🔘 Actions */}
 			<div className="mt-6 flex justify-end gap-3">
 				<Button
 					variant="outline"

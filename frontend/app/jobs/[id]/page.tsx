@@ -1,5 +1,6 @@
 "use client";
 
+import { Loader } from "@/components/landing/loader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -13,8 +14,8 @@ export default function Page() {
 		useJobDetails();
 	if (loading) {
 		return (
-			<main className="min-h-screen px-10 py-10">
-				<p className="text-slate-500">Loading job details...</p>
+			<main className="min-h-screen px-10 py-10 flex items-center">
+				<Loader />
 			</main>
 		);
 	}

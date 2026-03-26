@@ -4,6 +4,7 @@ import { JobFilters } from "@/features/job/job-filters";
 import { JobResults } from "@/features/job/job-results";
 import { useJobs } from "@/features/hooks/useJobs";
 import { useMemo } from "react";
+import { Loader } from "@/components/landing/loader";
 
 export default function Page() {
 	const {
@@ -19,7 +20,7 @@ export default function Page() {
 		departments,
 		employmentTypes,
 		setCurrentPage,
-		ITEMS_PER_PAGE
+		ITEMS_PER_PAGE,
 	} = useJobs();
 	const filteredJobs = useMemo(() => {
 		return filterJobs(jobs, filters);
@@ -46,9 +47,10 @@ export default function Page() {
 			</div>
 
 			{loading ? (
-				<p className="max-w-7xl mx-auto px-4 py-8 text-slate-500">
-					Loading jobs...
-				</p>
+				<div className="px-10 py-10">
+					{" "}
+					<Loader />
+				</div>
 			) : (
 				<div className="max-w-7xl mx-auto px-4 py-8">
 					<div className="mb-8">

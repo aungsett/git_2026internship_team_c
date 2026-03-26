@@ -64,8 +64,14 @@ export const ApplicantsSheet = ({
 							className="border-b border-gray-200 hover:bg-gray-50"
 						>
 							<td className="px-6 py-4">
-								<p className="font-semibold text-gray-900">
+								<p className="font-semibold text-lg text-gray-900">
 									{app.full_name}
+								</p>
+								<p className="text-sm text-gray-600">
+									{app.job_title}
+								</p>
+								<p className="text-sm text-gray-600">
+									{app.job_id}
 								</p>
 							</td>
 							<td className="px-6 py-4">
@@ -77,7 +83,7 @@ export const ApplicantsSheet = ({
 								</p>
 							</td>
 							<td className="px-6 py-4">
-								<p className="text-sm text-gray-900">
+								<p className="text-sm text-gray-900 capitalize">
 									{app.qualification ?? "—"}
 								</p>
 							</td>
