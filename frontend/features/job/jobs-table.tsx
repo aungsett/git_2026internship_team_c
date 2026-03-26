@@ -120,7 +120,7 @@ export const JobsTable = ({
 							<td className="px-2 py-4">
 								<div className="flex items-center justify-center gap-3">
 									{/* View */}
-									<Button
+									{/* <Button
 										variant="link"
 										className="text-blue-600 p-0"
 										onClick={() =>
@@ -130,7 +130,7 @@ export const JobsTable = ({
 										}
 									>
 										View
-									</Button>
+									</Button> */}
 
 									{/* Edit */}
 									<Button
@@ -138,7 +138,7 @@ export const JobsTable = ({
 										size="icon"
 										onClick={() =>
 											router.push(
-												`/dashboard/jobs/edit/${job.job_id}`,
+												`/dashboard/jobs/edit/${toSlug(job.title) + "-job-id-" + job.job_id.toLowerCase()}`,
 											)
 										}
 									>
