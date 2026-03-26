@@ -11,10 +11,7 @@ admin_bp = Blueprint("admin", __name__)
 def get_all_applications():
     try:
         
-        page = request.args.get('page', 1, type=int)
-        per_page = request.args.get('per_page', 10, type=int)
-
-        result = AdminService.get_all_applications(page, per_page)
+        result = AdminService.get_all_applications()
 
         return jsonify({
             "success": True,
@@ -47,7 +44,6 @@ def review_application(id):
             applicant_id=id,
             job_id=data.get("job_id"),
             status=data.get("status"),
-            comments=data.get("comments"),
             admin_id=data.get("admin_id")
         )
 
@@ -83,9 +79,22 @@ def export_csv():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
+@admin_bp.route("/jobs", methods=["GET"])
+@admin_required
+def get_all_applications():
+    try:
+        
+        result = AdminService.get_all_jobs()
 
+        return jsonify({
+            "success": True,
+            **result
+        }), 200
 
-@admin_bp.route("/jobs", methods=["POST"])
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@admin_bp.route("/create-jobs", methods=["POST"])
 @admin_required
 def create_job():
     try:
