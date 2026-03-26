@@ -9,7 +9,7 @@ export const SkillsSection = ({ skills }: { skills: string[] | null }) => {
 				</h2>
 			</div>
 
-			<div className="flex flex-wrap w-[1150px] items-start gap-[0px_8px] p-6">
+			<div className="flex flex-wrap items-start gap-4 p-6">
 				{skills?.map((skill, index) => (
 					<Badge
 						key={index}

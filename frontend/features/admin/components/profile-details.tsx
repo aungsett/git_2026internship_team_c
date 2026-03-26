@@ -1,3 +1,4 @@
+import { formatDate } from "@/features/hooks/useJobDetails";
 import { Applicant } from "@/lib/types";
 import { Github, Globe, Linkedin, Twitter } from "lucide-react";
 
@@ -18,7 +19,7 @@ export const ProfileDetails = ({ applicant }: { applicant: Applicant }) => {
 	const fields = [
 		{
 			label: "DATE OF BIRTH",
-			value: date_of_birth,
+			value: formatDate(date_of_birth + "") + "",
 			color: "text-slate-900",
 			left: "left-6",
 		},
