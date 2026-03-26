@@ -31,7 +31,7 @@ Team C
         subject = ""
         body = ""
 
-        if status == "shortlisted":
+        if status == "Shortlisted":
             subject = "Application Shortlisted"
             body = f"""Hi {first_name},
 
@@ -43,7 +43,7 @@ Best regards,
 Team C
 """
 
-        elif status == "rejected":
+        elif status == "Rejected":
             subject = "Application Update"
             body = f"""Hi {first_name},
 
