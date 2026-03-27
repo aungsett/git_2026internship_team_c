@@ -26,7 +26,7 @@ def upgrade():
 
     with op.batch_alter_table('documents', schema=None) as batch_op:
         batch_op.drop_constraint(batch_op.f('documents_applicant_id_fkey'), type_='foreignkey')
-        batch_op.create_foreign_key(None, 'application_reviews', ['applicant_id'], ['review_id'])
+        batch_op.create_foreign_key(None, 'application_reviews', ['review_id'], ['review_id'])
 
     # ### end Alembic commands ###
 
