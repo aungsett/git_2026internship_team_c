@@ -5,6 +5,7 @@ import { Job } from "@/lib/types";
 import { MapPin, Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toSlug } from "./job-results";
+import { api } from "@/lib/api";
 
 const getStatusStyle = (status: string) => {
 	switch (status) {
@@ -150,12 +151,14 @@ export const JobsTable = ({
 										variant="ghost"
 										size="icon"
 										className="text-red-500 hover:text-red-600"
-										onClick={() => {
-											// TODO: hook delete API
-											console.log(
-												"Delete job:",
-												job.job_id,
-											);
+										onClick={async () => {
+										    if (!confirm("Are you sure you want to delete this job?")) return;
+										    try {
+										        await api.deleteJob(job.id);
+										        window.location.reload();
+										    } catch (err: any) {
+										        alert(err.message || "Failed to delete job");
+										    }
 										}}
 									>
 										<Trash2 size={16} />
