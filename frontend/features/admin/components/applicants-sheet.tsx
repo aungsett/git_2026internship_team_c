@@ -118,7 +118,7 @@ export const ApplicantsSheet = ({
 									className="text-blue-600"
 									onClick={() => {
 										router.push(
-											`/dashboard/applicant-id=${app.id}`,
+											`/dashboard/applicants/applicant-id=${app.id}`,
 										);
 									}}
 								>
