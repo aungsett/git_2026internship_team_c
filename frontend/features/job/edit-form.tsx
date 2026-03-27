@@ -132,7 +132,7 @@ export const EditForm = ({ slug }: { slug: string }) => {
 				description: formData.jobDescription,
 				location: formData.location,
 				salary: formData.salaryRange,
-				status: formData.status,
+				status: formData.status.toLowerCase(),
 			});
 			setSuccess(true);
 			setTimeout(() => router.push("/dashboard/jobs"), 1500);
