@@ -32,6 +32,9 @@ def get_single_application(id):
 
     except ValueError as e:
         return jsonify({"success": False, "error": str(e)}), 404
+
+    except Exception:
+        return jsonify({"success": False, "error": "Failed to load application details"}), 500
     
 
 @admin_bp.route("/applications/<int:id>/review", methods=["PUT"])
