@@ -55,6 +55,21 @@ Best regards,
 Team C
 """
 
+        elif status == "Interviewed":
+            subject = "Interview Invitation"
+            body = f"""Hi {first_name},
+
+Congratulations! We are pleased to inform you that you have been selected for an interview for the position of {job_title} (Job ID: {job_id}).
+
+Our team will reach out to you shortly with the interview details including the date, time, and format.
+
+Please make sure to keep an eye on your email for further communication.
+
+We look forward to speaking with you!
+
+Best regards,
+Team C
+"""
         else:
             return  # don't send email for other statuses
 
