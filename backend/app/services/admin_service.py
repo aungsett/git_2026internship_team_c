@@ -23,7 +23,7 @@ class AdminService:
             applicant = app.applicant
 
             output.append({
-                "id": app.applicant_id,
+                "id": app.review_id,
                 "full_name": f"{applicant.first_name} {applicant.last_name}",
                 "email": applicant.email,
                 "phone_number": applicant.phone_number,
@@ -44,19 +44,18 @@ class AdminService:
 
     @staticmethod
     def get_single_application(application_id):
-        app = ApplicationReview.query.filter_by(applicant_id=application_id).first()
+        app = ApplicationReview.query.filter_by(review_id=application_id).first()
 
         if not app:
             raise ValueError("Application not found")
         
         applicant = app.applicant
 
-        doc_url = None
-        if applicant.document:
-            doc_url = applicant.document.document_url
+        doc_url = app.document.document_url if app.document else None
 
         data = {
             "applicant_id": applicant.applicant_id,
+            "review_id": app.review_id,
             "first_name": applicant.first_name,
             "last_name": applicant.last_name,
             "email": applicant.email,
