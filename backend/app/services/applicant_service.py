@@ -25,9 +25,6 @@ class ApplicantService:
         if not validate_email(email):
             raise ValueError("Invalid email format")
 
-        if Applicant.query.filter_by(email=email).first():
-            raise ValueError("Email already exists")
-
         if not validate_file_type(file.filename):
             raise ValueError("Only PDF files are allowed")
 
@@ -56,24 +53,27 @@ class ApplicantService:
         if job.status != "Published":
             raise ValueError("Job is not open for applications")
         
-        applicant = Applicant(
-            first_name=data.get("first_name").strip(),
-            last_name=data.get("last_name").strip(),
-            email=email,
-            date_of_birth=dob_obj,
-            qualification=data.get("qualification"),
-            address=data.get("address"),
-            phone_number=data.get("phone_number"),
-            college=data.get("college"),
-            work_experience=data.get("work_experience"),
-            preferred_japanese_course=data.get("preferred_japanese_course"),
-            skills=data.getlist("skills"),
-            language=data.getlist("language"),
-            social_links=data.getlist("social_links"),
-            professional_summary=data.get("professional_summary"),
-            comments=data.get("comments"),
-            created_at=datetime.utcnow()
-        )
+        applicant = Applicant.query.filter_by(email=email).first()
+
+        if not applicant:
+            applicant = Applicant(
+                first_name=data.get("first_name").strip(),
+                last_name=data.get("last_name").strip(),
+                email=email,
+                date_of_birth=dob_obj,
+                qualification=data.get("qualification"),
+                address=data.get("address"),
+                phone_number=data.get("phone_number"),
+                college=data.get("college"),
+                work_experience=data.get("work_experience"),
+                preferred_japanese_course=data.get("preferred_japanese_course"),
+                skills=data.getlist("skills"),
+                language=data.getlist("language"),
+                social_links=data.getlist("social_links"),
+                professional_summary=data.get("professional_summary"),
+                comments=data.get("comments"),
+                created_at=datetime.utcnow()
+            )
 
         db.session.add(applicant)
         db.session.flush()
