@@ -119,7 +119,9 @@ class AdminService:
         EmailService.send_status_update_email(
             applicant.email,
             applicant.first_name,
-            status
+            status,
+            review.job.title,
+            review.job_id
         )
 
         return True
