@@ -51,6 +51,7 @@ export const fetchApplicantDetails = async (id: string): Promise<any> => {
 	});
 
 	const result = await response.json();
+	console.log(result, " result");
 
 	if (!response.ok || !result.success) {
 		throw new ApiError(
@@ -123,4 +124,23 @@ export const updateReview = async ({
 	}
 
 	return data;
+};
+
+export const getStats = async (): Promise<any> => {
+	const response = await fetch(`${BASE_URL}/admin/stats`, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		credentials: "include",
+	});
+	const result = await response.json();
+	if (!response.ok || !result.success) {
+		throw new ApiError(
+			result.error || "Failed to fetch stats",
+			response.status,
+		);
+	}
+
+	return result.data;
 };
