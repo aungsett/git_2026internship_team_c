@@ -7,7 +7,7 @@ class Document(db.Model):
     document_id = db.Column(db.Integer, primary_key=True)
     
     # Foreign Key to Applicant
-    applicant_id = db.Column(db.Integer, db.ForeignKey('applicants.applicant_id'), nullable=False, unique=True)
+    review_id = db.Column(db.Integer, db.ForeignKey('application_reviews.review_id'), nullable=False, unique=True)
     
     file_name = db.Column(db.String(100))
     file_type = db.Column(db.String(10))

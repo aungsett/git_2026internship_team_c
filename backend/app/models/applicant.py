@@ -31,12 +31,9 @@ class Applicant(db.Model):
 
     # AI Parsed Fields
     professional_summary = db.Column(db.Text)
-    comments = db.Column(db.String(100))
+    comments = db.Column(db.String(500))
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-    # 1 Applicant <-> 1 Document
-    document = db.relationship("Document", backref="applicant", uselist=False, lazy=True)
 
     # 1 Applicant <-> Many Reviews
     reviews = db.relationship("ApplicationReview", backref="applicant", lazy=True, order_by="ApplicationReview.reviewed_at.desc()")

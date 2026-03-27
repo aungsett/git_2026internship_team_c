@@ -15,6 +15,8 @@ class ApplicationReview(db.Model):
     comments = db.Column(db.Text)
     reviewed_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    document = db.relationship("Document", backref= "review", uselist=False)
+
     #prevent duplicate applications
     __table_args__ = (
         db.UniqueConstraint('applicant_id', 'job_id', name='unique_application'),

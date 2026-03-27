@@ -95,11 +95,12 @@ class ApplicantService:
         )
 
         db.session.add(application)
+        db.session.flush()
 
         cloud_url = upload_cv(file, applicant.applicant_id)
 
         document = Document(
-            applicant_id=applicant.applicant_id,
+            review_id= application.review_id,
             file_name=file.filename,
             file_type="pdf",
             document_url=cloud_url,
