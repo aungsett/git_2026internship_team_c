@@ -6,6 +6,7 @@ from app.extensions import db
 from app.services.email_service import EmailService
 import csv
 import io
+from sqlalchemy import func
 
 
 class AdminService:
@@ -213,3 +214,80 @@ class AdminService:
         db.session.commit()
 
         return job
+    @staticmethod
+    def get_admin_stats():
+        # 1️⃣ Total Applicants
+        total_applicants = db.session.query(func.count(Applicant.applicant_id)).scalar()
+
+        # 2️⃣ Status Counts (Single Query)
+        status_counts_query = (
+            db.session.query(
+                ApplicationReview.status,
+                func.count(ApplicationReview.review_id)
+            )
+            .group_by(ApplicationReview.status)
+            .all()
+        )
+
+        status_counts = {
+            "Pending": 0,
+            "Shortlisted": 0,
+            "Rejected": 0,
+            "Interviewed": 0,
+        }
+
+        for status, count in status_counts_query:
+            status_counts[status] = count
+
+        # 3️⃣ Applications Over Time (Daily)
+        applications_over_time = (
+            db.session.query(
+                func.date(ApplicationReview.reviewed_at).label("date"),
+                func.count(ApplicationReview.review_id)
+            )
+            .group_by(func.date(ApplicationReview.reviewed_at))
+            .order_by(func.date(ApplicationReview.reviewed_at))
+            .all()
+        )
+
+        applications_over_time_data = [
+            {"date": str(date), "count": count}
+            for date, count in applications_over_time
+        ]
+
+        # 4️⃣ Drop-off Funnel (Where users leave)
+        drop_off_query = (
+            db.session.query(
+                ApplicationReview.status,
+                func.count(ApplicationReview.review_id)
+            )
+            .group_by(ApplicationReview.status)
+            .all()
+        )
+
+        # Ordered funnel
+        funnel_order = ["Pending", "Interviewed", "Shortlisted", "Rejected"]
+
+        drop_off_map = {status: count for status, count in drop_off_query}
+
+        drop_off_funnel = [
+            {"stage": stage, "count": drop_off_map.get(stage, 0)}
+            for stage in funnel_order
+        ]
+
+        # 5️⃣ Conversion Funnel (Progression)
+        # Same data, just logical interpretation for UI
+        conversion_funnel = [
+            {"stage": "Applied", "count": total_applicants},
+            {"stage": "Pending", "count": drop_off_map.get("Pending", 0)},
+            {"stage": "Interviewed", "count": drop_off_map.get("Interviewed", 0)},
+            {"stage": "Shortlisted", "count": drop_off_map.get("Shortlisted", 0)},
+        ]
+
+        return {
+            "totalApplicants": total_applicants,
+            "statusCounts": status_counts,
+            "applicationsOverTime": applications_over_time_data,
+            "dropOffFunnel": drop_off_funnel,
+            "conversionFunnel": conversion_funnel,
+        }

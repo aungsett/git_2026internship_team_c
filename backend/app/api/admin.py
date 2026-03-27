@@ -140,3 +140,12 @@ def update_job(job_id):
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+    
+@admin_bp.route("/stats", methods=["GET"])
+@admin_required
+def get_stats():
+    try:
+        data = AdminService.get_admin_stats()
+        return jsonify({"success": True, "data": data}), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
