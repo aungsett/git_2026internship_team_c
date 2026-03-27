@@ -114,7 +114,9 @@ class ApplicantService:
         try:
             EmailService.send_application_received_email(
                 applicant.email,
-                applicant.first_name
+                applicant.first_name,
+                job.title,
+                job.job_id
             )
         except Exception as e:
             print("Email sending failed:", e)
