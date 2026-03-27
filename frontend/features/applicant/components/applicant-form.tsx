@@ -19,26 +19,30 @@ export const ApplicantForm = ({
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>
 							<label className="block text-sm font-medium text-slate-700 mb-2">
-								First Name
+								First Name{" "}
+								<span className="text-red-600">*</span>
 							</label>
 							<input
 								type="text"
 								name="firstName"
 								value={formData.firstName}
 								onChange={handleInputChange}
+								required
 								className="w-full px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 								placeholder="John"
 							/>
 						</div>
 						<div>
 							<label className="block text-sm font-medium text-slate-700 mb-2">
-								Last Name
+								Last Name{" "}
+								<span className="text-red-600">*</span>
 							</label>
 							<input
 								type="text"
 								name="lastName"
 								value={formData.lastName}
 								onChange={handleInputChange}
+								required
 								className="w-full px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 								placeholder="Doe"
 							/>
@@ -48,26 +52,30 @@ export const ApplicantForm = ({
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>
 							<label className="block text-sm font-medium text-slate-700 mb-2">
-								Date of Birth
+								Date of Birth{" "}
+								<span className="text-red-600">*</span>
 							</label>
 							<input
 								type="date"
 								name="dateOfBirth"
 								value={formData.dateOfBirth}
 								onChange={handleInputChange}
+								required
 								className="w-full px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 								placeholder="mm/dd/yyyy"
 							/>
 						</div>
 						<div>
 							<label className="block text-sm font-medium text-slate-700 mb-2">
-								Phone Number
+								Phone Number{" "}
+								<span className="text-red-600">*</span>
 							</label>
 							<input
 								type="tel"
 								name="phone"
 								value={formData.phone}
 								onChange={handleInputChange}
+								required
 								className="w-full px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 								placeholder="+1 (555) 000-0000"
 							/>
@@ -76,13 +84,15 @@ export const ApplicantForm = ({
 
 					<div>
 						<label className="block text-sm font-medium text-slate-700 mb-2">
-							Email Address
+							Email Address{" "}
+							<span className="text-red-600">*</span>
 						</label>
 						<input
 							type="email"
 							name="email"
 							value={formData.email}
 							onChange={handleInputChange}
+							required
 							className="w-full px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 							placeholder="john@example.com"
 						/>
@@ -90,13 +100,15 @@ export const ApplicantForm = ({
 
 					<div>
 						<label className="block text-sm font-medium text-slate-700 mb-2">
-							Current Address
+							Current Address{" "}
+							<span className="text-red-600">*</span>
 						</label>
 						<input
 							type="text"
 							name="currentAddress"
 							value={formData.currentAddress}
 							onChange={handleInputChange}
+							required
 							className="w-full px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 							placeholder="Street, City, Country"
 						/>
@@ -116,12 +128,14 @@ export const ApplicantForm = ({
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>
 							<label className="block text-sm font-medium text-slate-700 mb-2">
-								Highest Qualification
+								Highest Qualification{" "}
+								<span className="text-red-600">*</span>
 							</label>
 							<select
 								name="highestQualification"
 								value={formData.highestQualification}
 								onChange={handleInputChange}
+								required
 								className="w-full px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 							>
 								<option value="">Select qualification</option>
@@ -135,13 +149,15 @@ export const ApplicantForm = ({
 						</div>
 						<div>
 							<label className="block text-sm font-medium text-slate-700 mb-2">
-								College/University
+								College/University{" "}
+								<span className="text-red-600">*</span>
 							</label>
 							<input
 								type="text"
 								name="college"
 								value={formData.college}
 								onChange={handleInputChange}
+								required
 								className="w-full px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 								placeholder="University Name"
 							/>
@@ -151,25 +167,29 @@ export const ApplicantForm = ({
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>
 							<label className="block text-sm font-medium text-slate-700 mb-2">
-								Years of Experience
+								Years of Experience{" "}
+								<span className="text-red-600">*</span>
 							</label>
 							<input
 								type="text"
 								name="yearsOfExperience"
 								value={formData.yearsOfExperience}
 								onChange={handleInputChange}
+								required
 								className="w-full px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 								placeholder="e.g. 5"
 							/>
 						</div>
 						<div>
 							<label className="block text-sm font-medium text-slate-700 mb-2">
-								Preferred Japanese Course
+								Preferred Japanese Course{" "}
+								<span className="text-red-600">*</span>
 							</label>
 							<select
 								name="preferredJapaneseCourse"
 								value={formData.preferredJapaneseCourse}
 								onChange={handleInputChange}
+								required
 								className="w-full px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 							>
 								<option value="">Select preference</option>
@@ -182,13 +202,14 @@ export const ApplicantForm = ({
 
 					<div>
 						<label className="block text-sm font-medium text-slate-700 mb-2">
-							Core Skills
+							Core Skills <span className="text-red-600">*</span>
 						</label>
 						<input
 							type="text"
 							name="coreSkills"
 							value={formData.coreSkills}
 							onChange={handleInputChange}
+							required
 							className="w-full px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 							placeholder="e.g. React, Node.js, AWS, Python (comma separated)"
 						/>
@@ -196,13 +217,15 @@ export const ApplicantForm = ({
 
 					<div>
 						<label className="block text-sm font-medium text-slate-700 mb-2">
-							Languages Known
+							Languages Known{" "}
+							<span className="text-red-600">*</span>
 						</label>
 						<input
 							type="text"
 							name="languagesKnown"
 							value={formData.languagesKnown}
 							onChange={handleInputChange}
+							required
 							className="w-full px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 							placeholder="e.g. English (Fluent), Japanese (Basic)"
 						/>
@@ -221,13 +244,15 @@ export const ApplicantForm = ({
 				<div className="px-6 pb-6 space-y-4">
 					<div>
 						<label className="block text-sm font-medium text-slate-700 mb-2">
-							LinkedIn Profile URL
+							LinkedIn Profile URL{" "}
+							<span className="text-red-600">*</span>
 						</label>
 						<input
 							type="url"
 							name="linkedIn"
 							value={formData.linkedIn}
 							onChange={handleInputChange}
+							required
 							className="w-full px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 							placeholder="https://linkedin.com/in/username"
 						/>
