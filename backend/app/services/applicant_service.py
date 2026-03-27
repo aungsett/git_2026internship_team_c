@@ -53,6 +53,14 @@ class ApplicantService:
         if job.status != "Published":
             raise ValueError("Job is not open for applications")
         
+        existing = ApplicationReview.query.filter_by(
+            applicant_id=applicant.applicant_id,
+            job_id=job_id
+        ).first()
+
+        if existing:
+            raise ValueError("You have already applied to this job")
+        
         applicant = Applicant.query.filter_by(email=email).first()
 
         if not applicant:
@@ -78,13 +86,7 @@ class ApplicantService:
         db.session.add(applicant)
         db.session.flush()
 
-        existing = ApplicationReview.query.filter_by(
-            applicant_id=applicant.applicant_id,
-            job_id=job_id
-        ).first()
-
-        if existing:
-            raise ValueError("You have already applied to this job")
+        
 
         application = ApplicationReview(
             applicant_id=applicant.applicant_id,
