@@ -22,6 +22,7 @@
 		"pdfjs-dist": "^3.11.174",
 		"react": "^18",
 		"react-dom": "^18",
+		"recharts": "^2.15.4",
 		"tailwind-merge": "^3.5.0",
 		"tailwindcss-animate": "^1.0.7"
 	},
