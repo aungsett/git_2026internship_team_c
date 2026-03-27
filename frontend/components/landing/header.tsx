@@ -49,6 +49,11 @@ export const Header = () => {
 									Jobs
 								</button>
 							</Link>
+							<Link href="/dashboard/analytics">
+								<button className="underline-offset-[6px] decoration-blue-700 hover:underline hover:text-blue-800 transition-all">
+									Analytics
+								</button>
+							</Link>
 						</>
 					)}
 				</div>
