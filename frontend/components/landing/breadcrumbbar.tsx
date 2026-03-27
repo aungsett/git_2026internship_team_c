@@ -80,10 +80,16 @@ export const BreadcrumbBar = () => {
 
 						{/* Other segments */}
 						{adjustedSegments.map((segment, index) => {
-							const href =
-								"/" + segments.slice(0, index + 1).join("/");
-							const isLast = index === segments.length - 1;
+							const actualIndex = showDashboardRoot
+								? index + 1
+								: index;
 
+							const href =
+								"/" +
+								segments.slice(0, actualIndex + 1).join("/");
+
+							const isLast =
+								index === adjustedSegments.length - 1;
 							return (
 								<div key={href} className="flex items-center">
 									<BreadcrumbSeparator />
