@@ -131,7 +131,12 @@ export const EditForm = ({ slug }: { slug: string }) => {
 				title: formData.jobTitle,
 				description: formData.jobDescription,
 				location: formData.location,
-				salary: formData.salaryRange,
+				salary_range: formData.salaryRange,
+				employment_type: formData.employmentType,
+				department: formData.department,
+				experience_required: formData.experience !== "" ? parseInt(formData.experience) : null,
+				skills: formData.requiredSkills,
+				application_deadline: formData.applicationDeadline || null,
 				status: formData.status.toLowerCase(),
 			});
 			setSuccess(true);

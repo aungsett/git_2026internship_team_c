@@ -41,7 +41,7 @@ class Job(db.Model):
     )
 
     #Relationship
-    applications = db.relationship('ApplicationReview', backref='job', lazy=True)
+    applications = db.relationship('ApplicationReview', backref='job', lazy=True, cascade='all, delete-orphan')
 
     def __repr__(self):
         return f"<Job {self.title}>"

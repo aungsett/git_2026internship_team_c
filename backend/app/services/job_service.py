@@ -113,7 +113,6 @@ class JobService:
 
     @staticmethod
     def delete_job(job_id):
-
         job = Job.query.get(job_id)
 
         if not job:
@@ -121,5 +120,7 @@ class JobService:
 
         db.session.delete(job)
         db.session.commit()
+
+        return True
 
         return True
