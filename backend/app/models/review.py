@@ -15,7 +15,7 @@ class ApplicationReview(db.Model):
     comments = db.Column(db.Text)
     reviewed_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    document = db.relationship("Document", backref= "review", uselist=False)
+    document = db.relationship("Document", backref="review", uselist=False, cascade="all, delete-orphan")
 
     #prevent duplicate applications
     __table_args__ = (
