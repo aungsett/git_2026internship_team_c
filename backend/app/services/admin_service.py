@@ -191,28 +191,35 @@ class AdminService:
         if not job:
             raise ValueError("Job not found")
 
-        # Update fields only if provided
         if data.get("title"):
-            job.title = data.get("title")
-
+            job.title = data["title"]
         if data.get("description"):
-            job.description = data.get("description")
-
+            job.description = data["description"]
         if data.get("location"):
-            job.location = data.get("location")
-
-        if data.get("salary"):
-            job.salary = data.get("salary")
-
-        #Handle draft/published
+            job.location = data["location"]
+        if data.get("salary_range"):
+            job.salary_range = data["salary_range"]
+        if data.get("employment_type"):
+            job.employment_type = data["employment_type"]
+        if data.get("department"):
+            job.department = data["department"]
+        if "experience_required" in data and data["experience_required"] is not None:
+            job.experience_required = int(data["experience_required"])
+        if data.get("skills") is not None:
+            job.skills = data["skills"]
+        if data.get("application_deadline"):
+            from datetime import datetime
+            job.application_deadline = datetime.strptime(data["application_deadline"], "%Y-%m-%d").date()
         if data.get("status"):
-            if data.get("status") not in ["draft", "published"]:
+            if data["status"].lower() not in ["draft", "published", "closed"]:
                 raise ValueError("Invalid status")
-            job.status = data.get("status")
+            job.status = data["status"].lower()
 
+        job.updated_at = datetime.utcnow()
         db.session.commit()
 
         return job
+
     @staticmethod
     def get_admin_stats():
         # 1️⃣ Total Applicants
