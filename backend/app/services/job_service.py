@@ -113,13 +113,16 @@ class JobService:
 
     @staticmethod
     def delete_job(job_id):
-
         job = Job.query.get(job_id)
-
+    
         if not job:
             raise ValueError("Job not found")
-
+    
+        # Delete related application reviews first
+        from app.models.review import ApplicationReview
+        ApplicationReview.query.filter_by(job_id=job_id).delete()
+    
         db.session.delete(job)
         db.session.commit()
-
+    
         return True
