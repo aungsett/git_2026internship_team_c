@@ -50,7 +50,7 @@ export default function Home() {
 								size={"lg"}
 								className="bg-blue-600 border border-blue-600 text-white hover:text-blue-600 hover:bg-slate-50 transition-all"
 							>
-								Start Hiring
+								Admin Login
 							</Button>
 						</Link>
 						<Link href="/jobs">
@@ -184,7 +184,7 @@ export default function Home() {
 					</div>
 					<Link href="/login">
 						<button className="bg-blue-600 rounded-full text-white text-lg font-semibold py-3 px-7 border-2 border-blue-600  hover:bg-white hover:text-blue-600 transition-all">
-							Start Hiring
+							Admin Login
 						</button>
 					</Link>
 				</div>
@@ -361,7 +361,7 @@ export default function Home() {
 						</p>
 						<Link href="/login">
 							<button className="bg-white rounded-full text-blue-700 text-lg font-semibold py-3 px-7 border-2 border-white  hover:bg-transparent hover:text-white transition-all">
-								Get Started Now
+								Admin Login
 							</button>
 						</Link>
 					</div>
