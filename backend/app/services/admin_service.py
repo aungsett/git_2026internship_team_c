@@ -75,6 +75,8 @@ class AdminService:
             "document_url": doc_url,
             "job_id": app.job_id,
             "job_title": app.job.title,
+            "professional_summary": applicant.professional_summary,
+            "comments": applicant.comments,
             "review": {
                 "application_id": app.review_id,
                 "comments": app.comments,

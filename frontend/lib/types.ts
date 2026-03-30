@@ -23,7 +23,9 @@ export interface Applicant {
 	phone_number: string | null;
 
 	skills: string[] | null;
-	summary: string | null;
+	professional_summary: string | null;
+
+	comments: string | null;
 
 	created_at: Date;
 	date_of_birth: string | null;

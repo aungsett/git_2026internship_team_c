@@ -38,6 +38,7 @@ export default function Page() {
 		linkedIn: "",
 		portfolioGithub: "",
 		additionalNotes: "",
+		professionalSummary: "",
 		acceptTerms: false,
 	});
 	const [cvFile, setCvFile] = useState<File | null>(null);
@@ -93,10 +94,11 @@ export default function Page() {
 					Array.isArray(parsed.language) && parsed.language.length > 0
 						? parsed.language.join(", ")
 						: prev.languagesKnown,
+				professionalSummary:
+					parsed.professional_summary
+						?? prev.professionalSummary,
 				additionalNotes:
-					!prev.additionalNotes && parsed.professional_summary
-						? parsed.professional_summary
-						: prev.additionalNotes,
+					prev.additionalNotes,
 			}));
 		} catch (err: any) {
 			setError(
@@ -153,6 +155,7 @@ export default function Page() {
 				formData.preferredJapaneseCourse,
 			);
 			payload.append("comments", formData.additionalNotes);
+			payload.append("professional_summary", formData.professionalSummary); 
 			payload.append(
 				"job_id",
 				extract(pathname)?.jobId.toUpperCase() + "",

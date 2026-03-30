@@ -296,6 +296,12 @@ export const ApplicantForm = ({
 							placeholder="Anything else you'd like us to know?"
 						/>
 					</div>
+
+					<input 
+						type="hidden" 
+						name="professionalSummary" 
+						value={formData.professionalSummary || ""} 
+					/>
 				</div>
 			</div>
 		</>
