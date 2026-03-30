@@ -1,6 +1,6 @@
 import { formatDate } from "@/features/hooks/useJobDetails";
 import { Applicant } from "@/lib/types";
-import { Github, Globe, Linkedin, Twitter } from "lucide-react";
+import { Globe } from "lucide-react";
 
 export const ProfileDetails = ({ applicant }: { applicant: Applicant }) => {
 	const {
@@ -14,6 +14,8 @@ export const ProfileDetails = ({ applicant }: { applicant: Applicant }) => {
 		social_links,
 		preferred_japanese_course,
 		language,
+		professional_summary,
+		comments,
 	} = applicant;
 
 	const fields = [
@@ -173,6 +175,31 @@ export const ProfileDetails = ({ applicant }: { applicant: Applicant }) => {
 						</div>
 					</div>
 				</div>
+
+				{/* Professional Summary Section */}
+				{professional_summary && (
+					<div className="flex flex-col gap-2 pt-4 border-t">
+						<h3 className="font-bold text-slate-400 text-[10px] tracking-[1.00px] leading-[15px] uppercase">
+							AI Generated Summary
+						</h3>
+						<p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">
+							{professional_summary}
+						</p>
+					</div>
+				)}
+
+				{/* Applicant Comments Section */}
+				{comments && (
+					<div className="flex flex-col gap-2 pt-4 border-t">
+						<h3 className="font-bold text-slate-400 text-[10px] tracking-[1.00px] leading-[15px] uppercase">
+							Applicant Comments / Additional Notes
+						</h3>
+						<p className="text-sm text-slate-800 bg-slate-50 p-3 rounded-md border whitespace-pre-wrap">
+							{comments}
+						</p>
+					</div>
+				)}
+
 			</div>
 		</section>
 	);
