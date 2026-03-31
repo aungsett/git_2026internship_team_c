@@ -7,9 +7,14 @@ from app.api.admin import admin_bp
 from app.api.auth import auth_bp
 from app.api.job import job_bp
 
-def create_app():
+def create_app(test_config=None):
     app = Flask(__name__)
-    app.config.from_object(Config)
+
+    # ✅ Allow test config override
+    if test_config:
+        app.config.update(test_config)
+    else:
+        app.config.from_object(Config)
 
     CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
 
@@ -26,16 +31,17 @@ def create_app():
         if request.method == "OPTIONS":
             return jsonify({}), 200
 
-    # Initialize Extensions
+    # Extensions
     db.init_app(app)
     migrate.init_app(app, db)
     mail.init_app(app)
 
     from . import models
+
     with app.app_context():
         db.create_all()
 
-    # Register Blueprints
+    # Blueprints
     app.register_blueprint(admin_bp, url_prefix="/admin")
     app.register_blueprint(applicant_bp, url_prefix="/applicant")
     app.register_blueprint(auth_bp, url_prefix="/auth")
