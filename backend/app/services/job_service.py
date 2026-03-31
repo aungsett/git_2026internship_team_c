@@ -64,9 +64,19 @@ class JobService:
     
     @staticmethod
     def create_job(data):
+        required_fields = {
+            "job_id": "Job ID",
+            "title": "Job title",
+            "description": "Job description",
+            "location": "Location",
+            "employment_type": "Employment type",
+            "salary_range": "Salary range",
+        }
 
-        if not data.get("title"):
-            raise ValueError("Job title is required")
+        for key, label in required_fields.items():
+            value = data.get(key)
+            if value is None or not str(value).strip():
+                raise ValueError(f"{label} is required")
 
         deadline = None
         if data.get("application_deadline"):

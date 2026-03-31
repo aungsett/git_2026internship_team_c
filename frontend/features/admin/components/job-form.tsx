@@ -106,10 +106,38 @@ export const JobForm = () => {
 
 	const handleSubmit = async (status: string) => {
 	    setError("");
-	    if (!formData.jobTitle) {
-	        setError("Job title is required.");
-	        return;
-	    }
+		if (!formData.jobTitle.trim()) {
+			setError("Job title is required.");
+			return;
+		}
+		if (!formData.jobId.trim()) {
+			setError("Job ID is required.");
+			return;
+		}
+		if (!formData.location.trim()) {
+			setError("Location is required.");
+			return;
+		}
+		if (!formData.employmentType.trim()) {
+			setError("Employment type is required.");
+			return;
+		}
+		if (!formData.department.trim()) {
+			setError("Department is required.");
+			return;
+		}
+		if (!formData.salaryRange.trim()) {
+			setError("Salary range is required.");
+			return;
+		}
+		if (!formData.jobDescription.trim()) {
+			setError("Job description is required.");
+			return;
+		}
+		if (formData.requiredSkills.length === 0) {
+			setError("Please add at least one required skill.");
+			return;
+		}
 		if (
 			formData.experience.trim() !== "" &&
 			!/^[0-9]+$/.test(formData.experience.trim())
@@ -117,6 +145,10 @@ export const JobForm = () => {
 			setError(
 				"Experience must be a whole number of years (example: 0, 1, 5).",
 			);
+			return;
+		}
+		if (!formData.applicationDeadline) {
+			setError("Application deadline is required.");
 			return;
 		}
 	    setLoading(true);

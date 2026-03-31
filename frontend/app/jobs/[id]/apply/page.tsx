@@ -135,6 +135,14 @@ export default function Page() {
 			return;
 		}
 
+		const experience = formData.yearsOfExperience.trim();
+		if (!/^\d+$/.test(experience)) {
+			setError(
+				"Years of experience must be a whole number (example: 0, 1, 2).",
+			);
+			return;
+		}
+
 		setLoading(true);
 
 		try {
@@ -149,7 +157,7 @@ export default function Page() {
 			payload.append("date_of_birth", formData.dateOfBirth);
 			payload.append("qualification", formData.highestQualification);
 			payload.append("college", formData.college);
-			payload.append("work_experience", formData.yearsOfExperience);
+			payload.append("work_experience", experience);
 			payload.append(
 				"preferred_japanese_course",
 				formData.preferredJapaneseCourse,
