@@ -12,7 +12,13 @@ class ApplicantService:
 
     @staticmethod
     def submit_application(data, file):
-        required_fields = ["first_name", "last_name", "email", "job_id"]
+        required_fields = [
+            "first_name",
+            "last_name",
+            "email",
+            "job_id",
+            "work_experience",
+        ]
         for field in required_fields:
             if not data.get(field):
                 raise ValueError(f"{field} is required")
@@ -43,6 +49,13 @@ class ApplicantService:
 
             if age < 18:
                 raise ValueError("Applicant must be at least 18 years old")
+
+        work_experience_raw = (data.get("work_experience") or "").strip()
+        if not work_experience_raw.isdigit():
+            raise ValueError(
+                "Years of experience must be a whole number (example: 0, 1, 2)."
+            )
+        work_experience = int(work_experience_raw)
         
         job_id = data.get("job_id")
         job = Job.query.filter_by(job_id=job_id).first()
@@ -66,7 +79,7 @@ class ApplicantService:
                 address=data.get("address"),
                 phone_number=data.get("phone_number"),
                 college=data.get("college"),
-                work_experience=data.get("work_experience"),
+                work_experience=work_experience,
                 preferred_japanese_course=data.get("preferred_japanese_course"),
                 skills=data.getlist("skills"),
                 language=data.getlist("language"),

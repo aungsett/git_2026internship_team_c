@@ -124,7 +124,7 @@ export default function Page() {
 							Skills & Competencies
 						</h3>
 						<div className="flex flex-wrap gap-2">
-							{jobDetails?.skills.map((skill) => (
+							{(jobDetails?.skills ?? []).map((skill) => (
 								<Badge
 									key={skill}
 									variant="secondary"

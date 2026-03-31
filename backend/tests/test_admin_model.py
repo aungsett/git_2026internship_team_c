@@ -1,4 +1,4 @@
-import pytest
+import pytest 
 from sqlalchemy.exc import IntegrityError
 from app.extensions import db
 from app.models.admin import Admin
