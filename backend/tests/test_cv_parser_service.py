@@ -51,7 +51,7 @@ class TestCVParserService:
                     CVParserService.parse_cv(mock_file)
 
     def test_parse_cv_network_error(self, app):
-        from unittest.mock import patch
+        from unittest.mock import patch, MagicMock
         
         with app.app_context():
             with patch("app.services.cv_parser_service.requests.post") as mock_post:
