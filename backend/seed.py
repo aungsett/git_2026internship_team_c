@@ -24,6 +24,12 @@ def seed_admins():
                 "created_at": now
             },
             {
+                "firebase_uid": "rI9NrwcIJ9T5UxLFL0ZRAAib7tG3",
+                "username": "Tester",
+                "email": "tester@gmail.com",
+                "created_at": now
+            },			
+            {
                 "firebase_uid": "fs1Uw1b2dqd6DJTtMHwfcQtZpuk2",
                 "username": "Pakhi Sharma",
                 "email": "paksh2004@gmail.com",
